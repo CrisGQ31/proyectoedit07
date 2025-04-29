@@ -25,7 +25,7 @@
             </div>
             <div class="login-box-body">
                 <p class="login-box-msg">Ingresa tus credenciales para comenzar tu sesi&oacute;n</p>
-                <form action="{{ route('login.post') }}" method="POST">
+                <form action="{{ route('validateUser') }}" method="POST">
                     @csrf
                     <div class="form-group has-feedback">
                             <input type="email" name="email" class="form-control" placeholder="Correo Electrónico" required autofocus>

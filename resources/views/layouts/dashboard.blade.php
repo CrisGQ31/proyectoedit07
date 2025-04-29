@@ -68,6 +68,10 @@
                     $('.ajax-link').on('click', function(e) {
                         e.preventDefault();
                         var url = $(this).attr('href');
+
+                        $('.ajax-link').parent('li').removeClass('active');
+                        $(this).parent('li').addClass('active');
+
                         loadContent(url);
                     });
                 });
