@@ -17,7 +17,7 @@
         </style>
 
     </head>
-    <body class="hold-transition skin-blue sidebar-mini sidebar-collapse">
+    <body class="skin-blue sidebar-mini sidebar-collapse fixed">
         <div class="wrapper">
 
             @include('layouts.sections.header')
