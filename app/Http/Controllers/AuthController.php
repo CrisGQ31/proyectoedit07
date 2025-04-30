@@ -23,6 +23,7 @@ class AuthController extends Controller
     {   
         // OBTENEMOS CREDENCIALES
         $credentials = $request->only('email', 'password');
+        $credentials['activo'] = 'S'; // AGREGAMOS CONDICION DE USUARIOS ACTIVOS
         $remember = $request->has('remember');
 
         // VALIDAMOS Y ENVIAMOS AL DASHBOARD SI ES CORRECTO

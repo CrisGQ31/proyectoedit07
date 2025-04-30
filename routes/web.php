@@ -31,4 +31,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/users', function () {
         return view('modules.users');
     })->name('users');
+
+    // MODULO DE USUARIOS
+    // DATATABLE
+    Route::get('/users/data', [UsersController::class, 'usersDatas'])->name('users.data');
+    // CRUD
+    Route::post('/users/create', [UsersController::class, 'usersCreate'])->name('users.create');
+    Route::post('/users/update', [UsersController::class, 'usersUpdate'])->name('users.update');
+    Route::post('/users/deteleActive', [UsersController::class, 'usersDeleteActive'])->name('users.deleteactive');
 });

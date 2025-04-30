@@ -39,7 +39,7 @@
                 $(document).ready(function() {
                     // Función para cargar contenido vía AJAX
                     function loadContent(url) {
-                        $('#contentGeneric').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span>Cargando...</span></div>');
+                        // $('#contentGeneric').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span>Cargando...</span></div>');
                         $.ajax({
                             url: url,
                             type: 'GET',
