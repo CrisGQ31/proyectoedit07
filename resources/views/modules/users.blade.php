@@ -72,7 +72,7 @@
                     <div class="form-group has-feedback">
                         <label for="nameUser" class="needed">Nombre</label>
                         <input type="text" class="form-control" id="nameUser" name="nameUser">
-                        <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+                        <span class="glyphicon glyphicon-user form-control-feedback"></span>
                     </div>
                     <div class="row">
                         <div class="col-xs-12">
@@ -101,7 +101,7 @@
                             <div class="form-group has-feedback">
                                 <label for="passwordUserAnt">Contraseña</label>
                                 <input type="password" class="form-control" id="passwordUserAnt" name="passwordUserAnt">
-                                <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+                                <span class="glyphicon glyphicon-eye-close form-control-feedback"></span>
                             </div>
                         </div>
                     </div>
@@ -113,7 +113,7 @@
                                 <div class="form-group has-feedback">
                                     <label for="passwordUser">Nueva Contraseña</label>
                                     <input type="password" class="form-control" id="passwordUser" name="passwordUser">
-                                    <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+                                    <span class="glyphicon glyphicon-eye-close form-control-feedback"></span>
                                 </div>
                             </div>
                         </div>
@@ -122,7 +122,7 @@
                                 <div class="form-group has-feedback">
                                     <label for="passwordUserConfirm">Confirmar Contraseña</label>
                                     <input type="password" class="form-control" id="passwordUserConfirm" name="passwordUserConfirm">
-                                    <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+                                    <span class="glyphicon glyphicon-eye-close form-control-feedback"></span>
                                 </div>
                             </div>
                         </div>

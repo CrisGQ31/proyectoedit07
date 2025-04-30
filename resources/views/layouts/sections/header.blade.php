@@ -2,9 +2,14 @@
     <!-- Logo -->
     <a href="{{ url('/dashboard') }}" class="logo">
       <!-- mini logo for sidebar mini 50x50 pixels -->
-      <span class="logo-mini"><b>PF</b></span>
+      <span class="logo-mini">
+        <img src="{{ asset('img/generics/logo.png') }}" alt="Logo" style="height: 30px;border-radius: 50%;">
+      </span>
       <!-- logo for regular state and mobile devices -->
-      <span class="logo-lg"><b>Proyecto Final</b></span>
+      <span class="logo-lg">
+        <img src="{{ asset('img/generics/logo.png') }}" alt="Logo" style="height: 30px;border-radius: 50%;">
+        <b>Proyecto Final</b>
+      </span>
     </a>
     <!-- Header Navbar: style can be found in header.less -->
     <nav class="navbar navbar-static-top">
