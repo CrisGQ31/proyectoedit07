@@ -29,7 +29,7 @@ class UsersController extends Controller
     public function usersDatas(Request $request)
     {
         $resultGral = array('status' => 'success', 'totalCount' => 0, 'msg' => 'TODO BIEN', "data" => array());
-        
+
         // VALIDAMOS SI ES PROCESO PARA DATATABLE O NORMAL
         $dataTable = ($request->input('dataTable') == 'S' ? true : false);
         try {
@@ -42,17 +42,17 @@ class UsersController extends Controller
             if (!is_null($activo) && $activo !== '') {
                 $query->where('activo', $activo);
             }
-            
+
             if ($dataTable) { // DATATABLE
                 $resultGral = DataTables::of($query)->make(true);
-                
+
             }else{ // NORMAL
                 $idUsuario = $request->input('id');
                 if (empty($idUsuario) || !is_numeric($idUsuario)) {
                     throw new \Exception('PARAMETROS INCORRECTOS (IE)');
                 }
                 $query->where('id', $idUsuario);
-        
+
                 $resultGral["data"] = $query->get(); // ← Respuesta directa
 
             }
@@ -90,13 +90,13 @@ class UsersController extends Controller
                 'name.required'     => 'El campo nombre es obligatorio.',
                 'name.string'       => 'El nombre debe ser una cadena de texto.',
                 'name.max'          => 'El nombre no debe superar los 255 caracteres.',
-                
+
                 'email.unique'      => 'El email ingresado no se encuentra disponible.',
                 'email.required'    => 'El campo correo electrónico es obligatorio.',
                 'email.email'       => 'Debe ingresar un correo electrónico válido.',
                 'email.string'      => 'El correo debe ser una cadena.',
                 'email.max'         => 'El correo no debe superar los 500 caracteres.',
-            
+
                 'password.required' => 'La contraseña es obligatoria.',
                 'password.string'   => 'La contraseña debe ser una cadena.',
                 'password.min'      => 'La contraseña debe tener al menos 6 caracteres.', // podrías cambiar esto a 6+
@@ -158,7 +158,7 @@ class UsersController extends Controller
                 'name'     => 'required|string|max:255',
                 'email' => 'required|email|string|max:500|unique:users,email,' . $user->id,
             ];
-            
+
             if($request->passwordChange == 'S') {
                 if (!Hash::check($request->input('passwordUserAnt'), $user->password)) {
                     throw new \Exception("No se logra validar contrase&ntilde;a actual.", 1);
@@ -168,18 +168,18 @@ class UsersController extends Controller
                     'password' => 'required|string|min:6|max:255',
                 ]);
             }
-            
+
             $messages = [
                 'name.required'     => 'El campo nombre es obligatorio.',
                 'name.string'       => 'El nombre debe ser una cadena de texto.',
                 'name.max'          => 'El nombre no debe superar los 255 caracteres.',
-                
+
                 'email.unique'      => 'El email ingresado no se encuentra disponible.',
                 'email.required'    => 'El campo correo electrónico es obligatorio.',
                 'email.email'       => 'Debe ingresar un correo electrónico válido.',
                 'email.string'      => 'El correo debe ser una cadena.',
                 'email.max'         => 'El correo no debe superar los 500 caracteres.',
-            
+
                 'password.required' => 'La contraseña es obligatoria.',
                 'password.string'   => 'La contraseña debe ser una cadena.',
                 'password.min'      => 'La contraseña debe tener al menos 6 caracteres.', // podrías cambiar esto a 6+
@@ -236,7 +236,7 @@ class UsersController extends Controller
             $rules = [
                 'activo' => 'required|string|in:S,N|max:1',
             ];
-            
+
             $messages = [
                 'activo.required'     => 'Parametros incorrectos.',
                 'activo.string'       => 'Parametros incorrectos.',
@@ -274,5 +274,5 @@ class UsersController extends Controller
         }
         return $resultGral;
     }
-    
+
 }
