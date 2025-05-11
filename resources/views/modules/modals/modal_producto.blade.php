@@ -85,7 +85,7 @@
 
 {{--@endsection--}}
 
-@push('scripts')
+{{--@push('scripts')--}}
     <script>
         // Funciones para registrar y actualizar productos, y abrir el modal.
 
@@ -165,7 +165,7 @@
         $('#btnUpdateProduct').on('click', function () {
             const id = $('#hddIdProduct').val();
             const nombre = $('#nameProduct').val();
-            const precio = $('#priceProduct').val();
+            const precio = $('#priceProduct').val();|
 
             if (!nombre || !precio) {
                 Swal.fire('Error', 'Todos los campos son obligatorios', 'error');
@@ -197,4 +197,4 @@
             });
         });
     </script>
-@endpush
+{{--@endpush--}}

@@ -85,7 +85,7 @@
 
 {{--@endsection--}}
 
-@push('scripts')
+{{--@push('scripts')--}}
     <script>
         // Funciones de validación, registrar, actualizar, activar/desactivar, abrir modal, datatables...
 
@@ -272,4 +272,4 @@
             });
         });
     </script>
-@endpush
+{{--@endpush--}}

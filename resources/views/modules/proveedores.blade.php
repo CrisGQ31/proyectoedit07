@@ -1,8 +1,4 @@
-{{-- resources/views/modules/proveedores.blade.php --}}
 
-@extends('layouts.dashboard')
-
-@section('content')
     <section class="content-header">
         <h1>Proveedores</h1>
         <small>Gestión de proveedores</small>
@@ -91,9 +87,7 @@
             </div>
         </div>
     </div>
-@endsection
 
-@push('scripts')
     <script>
         function abrirModalProveedor() {
             $('#formEditProveedor')[0].reset(); // Limpia los campos
@@ -212,6 +206,10 @@
                     }
                 ]
             });
+
+            $(document).on('click', '#btnAddProveedor', function () {
+                abrirModalProveedor();
+            });
         });
 
         // Registrar nuevo proveedor
@@ -246,8 +244,15 @@
                         Swal.fire('Error', response.msg, 'error');
                     }
                 },
-                error: function () {
-                    Swal.fire('Error', 'Ocurrió un error al guardar el proveedor', 'error');
+                error: function (xhr) {
+                    console.error(xhr.responseText); // Muestra el error exacto en la consola del navegador
+
+                    let msg = 'Ocurrió un error al guardar el proveedor';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        msg = xhr.responseJSON.message;
+                    }
+
+                    Swal.fire('Error', msg, 'error');
                 }
             });
         });
@@ -292,4 +297,4 @@
             });
         });
     </script>
-@endpush
+

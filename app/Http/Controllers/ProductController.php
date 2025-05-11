@@ -126,5 +126,24 @@ class ProductController extends Controller
         }
     }
 
+    // Consultar un producto para el modal de edición
+    public function edit($id)
+    {
+        try {
+            $product = Product::findOrFail($id);
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $product
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'msg' => 'Error al obtener el producto: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+
 }
 

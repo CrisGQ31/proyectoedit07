@@ -17,6 +17,12 @@
                         <label for="nombreProveedor">Nombre:</label>
                         <input type="text" class="form-control" id="nombreProveedor" required>
                     </div>
+
+                    <div class="form-group">
+                        <label for="contactoProveedor">Contacto:</label>
+                        <input type="text" class="form-control" id="contactoProveedor" required>
+                    </div>
+
                     <div class="form-group">
                         <label for="telefonoProveedor">Teléfono:</label>
                         <input type="text" class="form-control" id="telefonoProveedor" required>

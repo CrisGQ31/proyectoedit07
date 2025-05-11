@@ -43,7 +43,7 @@
 
             <!-- NUEVO: Opción de PROVEEDORES -->
             <li>
-                <a href="{{ route('proveedores') }}" class="ajax-link">
+                <a href="{{ route('proveedores.index') }}" class="ajax-link">
                     <i class="fa fa-truck"></i> <span>PROVEEDORES</span>
                 </a>
             </li>

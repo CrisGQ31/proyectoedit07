@@ -42,6 +42,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/products/toggle', [ProductController::class, 'toggle'])->name('products.toggle');
     // Eliminar un producto
     Route::post('/products/delete', [ProductController::class, 'destroy'])->name('products.delete');
+    Route::get('/products/edit/{id}', [ProductController::class, 'edit'])->name('products.edit');
+
 });
 
 
@@ -79,13 +81,15 @@ Route::middleware('auth')->group(function () {
 Route::get('/proveedores', [ProveedorController::class, 'index'])->name('proveedores.index');
 
 // Ruta para obtener los datos de los proveedores (DataTables)
-Route::get('/proveedores/data', [ProveedorController::class, 'data'])->name('proveedores.data');
+Route::get('/proveedores/data', [ProveedorController::class, 'getData'])->name('proveedores.data');
+
+
 
 // Ruta para obtener los detalles de un proveedor para edición (GET)
 Route::get('/proveedores/edit/{id}', [ProveedorController::class, 'edit'])->name('proveedores.edit');
 
 // Ruta para crear un nuevo proveedor (POST)
-Route::post('/proveedores/create', [ProveedorController::class, 'store'])->name('proveedores.create');
+Route::post('/proveedores/create', [ProveedorController::class, 'create'])->name('proveedores.create');
 
 // Ruta para actualizar un proveedor (POST)
 Route::post('/proveedores/update', [ProveedorController::class, 'update'])->name('proveedores.update');
