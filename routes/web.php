@@ -6,6 +6,7 @@ use App\Http\Controllers\UsersController;
 use App\Http\Controllers\ProductController;
 //use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\ProveedorController;
+use App\Http\Controllers\EmpleadoController;
 
 
 // CREAR EL PRIMER USUARIO ADMINISTRADOR
@@ -96,3 +97,34 @@ Route::post('/proveedores/update', [ProveedorController::class, 'update'])->name
 
 // Ruta para activar/desactivar un proveedor (POST)
 Route::post('/proveedores/toggle', [ProveedorController::class, 'toggle'])->name('proveedores.toggle');
+
+////RUTAS PARA LOS EMPLEADOS
+// Rutas para la gestión de empleados
+Route::prefix('empleados')->group(function () {
+    Route::get('/', [EmpleadoController::class, 'index'])->name('empleados.index');
+    Route::get('/data', [EmpleadoController::class, 'data'])->name('empleados.data');
+    Route::post('/store', [EmpleadoController::class, 'store'])->name('empleados.store'); // ← en lugar de "create"
+    Route::post('/update', [EmpleadoController::class, 'update'])->name('empleados.update');
+    Route::post('/toggle', [EmpleadoController::class, 'toggle'])->name('empleados.toggle');
+    Route::get('/edit/{id}', [EmpleadoController::class, 'edit'])->name('empleados.edit');
+});
+//Route::get('/empleados', [EmpleadoController::class, 'index'])->name('empleados.index');
+////Route::get('/empleados', [EmpleadoController::class, 'index'])->name('empleados.index');
+//Route::get('/empleados/data', [EmpleadoController::class, 'data'])->name('empleados.data');
+//Route::post('/empleados/create', [EmpleadoController::class, 'create'])->name('empleados.create');
+//Route::post('/empleados/update', [EmpleadoController::class, 'update'])->name('empleados.update');
+//Route::post('/empleados/toggle', [EmpleadoController::class, 'toggle'])->name('empleados.toggle');
+//Route::get('/empleados/edit/{id}', [EmpleadoController::class, 'edit'])->name('empleados.edit');
+
+
+
+
+//PRUEBA PARA REVISAR LAS TABLAS DE LA BD
+use Illuminate\Support\Facades\DB;
+
+Route::get('/check-db', function () {
+    $tablas = DB::select('SHOW TABLES');
+    return dd($tablas);
+});
+
+

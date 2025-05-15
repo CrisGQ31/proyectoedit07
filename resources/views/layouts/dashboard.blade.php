@@ -5,7 +5,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <title>Proyecto Final</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        
+
         @include('layouts.sections.librariesHeaders')
 
         @stack('styles')
@@ -29,9 +29,9 @@
 
             @include('layouts.sections.footer')
             @include('layouts.sections.control-sidebar')
-            
+
         </div>
-        
+
         @include('layouts.sections.librariesFooters')
 
         @push('scripts')
@@ -47,23 +47,48 @@
                                 $('#contentGeneric').html(data);
                             },
                             error: function(xhr) {
+
+                                let errorMsg = 'Error al cargar el contenido.';
+
+                                if (xhr.status === 404) {
+                                    errorMsg += '<br>Recurso no encontrado (404).';
+                                } else if (xhr.status === 500) {
+                                    errorMsg += '<br>Error interno del servidor (500).';
+                                }
+
+                                if (xhr.responseText) {
+                                    console.error('Detalles del error:', xhr.responseText);
+                                    errorMsg += '<br><small>Detalles: ' + xhr.statusText + '</small>';
+                                }
+
                                 loadContent('{{ route('welcome') }}');
+
                                 Swal.fire({
                                     title: 'Aviso',
-                                    html: 'Error al cargar el contenido. Por favor, int&eacute;ntelo de nuevo m&aacute;s tarde.',
-                                    icon: 'warning',
+                                    html: errorMsg,
+                                    icon: 'error',
                                     buttonsStyling: false,
                                     customClass: {
                                         confirmButton: 'btn btn-primary'
                                     }
                                 });
+                                {{--loadContent('{{ route('welcome') }}');--}}
+                                {{--Swal.fire({--}}
+                                {{--    title: 'Aviso',--}}
+                                {{--    html: 'Error al cargar el contenido. Por favor, int&eacute;ntelo de nuevo m&aacute;s tarde.',--}}
+                                {{--    icon: 'warning',--}}
+                                {{--    buttonsStyling: false,--}}
+                                {{--    customClass: {--}}
+                                {{--        confirmButton: 'btn btn-primary'--}}
+                                {{--    }--}}
+                                {{--});--}}
                             }
                         });
                     }
-            
+
                     // Cargar la vista predeterminada al iniciar
                     loadContent('{{ route('welcome') }}');
-            
+
                     // Manejar clics en enlaces con la clase 'ajax-link'
                     $('.ajax-link').on('click', function(e) {
                         e.preventDefault();

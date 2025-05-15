@@ -11,9 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->char('activo', 1)->default('S')->after('remember_token');
-        });
+        if (!Schema::hasColumn('users', 'activo')) {
+            Schema::table('users', function (Blueprint $table) {
+                $table->char('activo', 1)->default('S')->after('remember_token');
+            });
+        }
+//        Schema::table('users', function (Blueprint $table) {
+//            $table->char('activo', 1)->default('S')->after('remember_token');
+//        });
     }
 
     /**

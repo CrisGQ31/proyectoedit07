@@ -47,6 +47,15 @@
                     <i class="fa fa-truck"></i> <span>PROVEEDORES</span>
                 </a>
             </li>
+
+            <!-- NUEVO: Opción de EMPLEADOS -->
+            <li>
+                <a href="{{ route('empleados.index') }}" class="ajax-link">
+                    <i class="fa fa-users"></i> <span>EMPLEADOS</span>
+                </a>
+            </li>
+
+
         </ul>
     </section>
 </aside>
