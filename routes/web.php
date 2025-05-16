@@ -7,6 +7,7 @@ use App\Http\Controllers\ProductController;
 //use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\EmpleadoController;
+use App\Http\Controllers\AccionController;
 
 
 // CREAR EL PRIMER USUARIO ADMINISTRADOR
@@ -115,6 +116,18 @@ Route::prefix('empleados')->group(function () {
 //Route::post('/empleados/update', [EmpleadoController::class, 'update'])->name('empleados.update');
 //Route::post('/empleados/toggle', [EmpleadoController::class, 'toggle'])->name('empleados.toggle');
 //Route::get('/empleados/edit/{id}', [EmpleadoController::class, 'edit'])->name('empleados.edit');
+
+
+
+// Rutas para Acciones
+    Route::get('acciones/', [App\Http\Controllers\AccionController::class, 'index'])->name('acciones.index');
+    Route::get('/acciones/data', [App\Http\Controllers\AccionController::class, 'data'])->name('acciones.data');
+    Route::post('/acciones/store', [App\Http\Controllers\AccionController::class, 'store'])->name('acciones.store');
+    Route::get('/acciones/edit/{id}', [App\Http\Controllers\AccionController::class, 'edit']);
+    Route::post('/acciones/toggle', [App\Http\Controllers\AccionController::class, 'toggle']);
+
+
+
 
 
 

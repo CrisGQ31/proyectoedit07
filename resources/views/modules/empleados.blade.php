@@ -24,6 +24,8 @@
                     <th>Teléfono</th>
                     <th>Correo</th>
                     <th>Activo</th>
+                    <th>Fecha Registro</th>
+                    <th>Fecha Actualización</th>
                     <th>Acciones</th>
                 </tr>
                 </thead>
@@ -96,143 +98,158 @@
     </div>
 </div>
 
-@push('scripts')
-    <script>
-        function abrirModalEmpleado() {
-            $('#formEditEmpleado')[0].reset();
-            $('#btnRegisterEmpleado').show();
-            $('#btnUpdateEmpleado').hide();
-            $('#modalEditEmpleado').modal('show');
-        }
+{{--@push('scripts')--}}
+<script>
+    function abrirModalEmpleado() {
+        $('#formEditEmpleado')[0].reset();
+        $('#btnRegisterEmpleado').show();
+        $('#btnUpdateEmpleado').hide();
+        $('#modalEditEmpleado').modal('show');
+    }
 
-        function actualizarDatatablesEmpleados() {
-            tblEmpleadosActivos.ajax.reload(null, false);
-            tblEmpleadosInactivos.ajax.reload(null, false);
-        }
+    function actualizarDatatablesEmpleados() {
+        tblEmpleadosActivos.ajax.reload(null, false);
+        tblEmpleadosInactivos.ajax.reload(null, false);
+    }
 
-        function toggleEmpleadoActive(id, status) {
-            $.ajax({
-                url: '/empleados/toggle',
-                method: 'POST',
-                data: {
-                    id: id,
-                    activo: status,
-                    _token: '{{ csrf_token() }}'
-                },
-                success: function(response) {
-                    if (response.status === 'success') {
-                        Swal.fire('Éxito', response.msg, 'success');
-                        actualizarDatatablesEmpleados();
-                    } else {
-                        Swal.fire('Error', response.msg, 'error');
-                    }
-                },
-                error: function() {
-                    Swal.fire('Error', 'Ocurrió un error al cambiar el estado del empleado', 'error');
+    function toggleEmpleadoActive(id, status) {
+        $.ajax({
+            url: '/empleados/toggle',
+            method: 'POST',
+            data: {
+                id: id,
+                activo: status,
+                _token: '{{ csrf_token() }}'
+            },
+            success: function(response) {
+                if (response.status === 'success') {
+                    Swal.fire('Éxito', response.msg, 'success');
+                    actualizarDatatablesEmpleados();
+                } else {
+                    Swal.fire('Error', response.msg, 'error');
                 }
-            });
-        }
+            },
+            error: function() {
+                Swal.fire('Error', 'Ocurrió un error al cambiar el estado del empleado', 'error');
+            }
+        });
+    }
 
-        function getEmpleadoData(id) {
-            $.ajax({
-                url: '/empleados/edit/' + id,
-                method: 'GET',
-                success: function(response) {
-                    if (response.status === 'success') {
-                        $('#hddIdEmpleado').val(response.data.idempleado);
-                        $('#nombreEmpleado').val(response.data.nombre);
-                        $('#apellidoPaternoEmpleado').val(response.data.apellidopaterno);
-                        $('#apellidoMaternoEmpleado').val(response.data.apellidomaterno);
-                        $('#telefonoEmpleado').val(response.data.telefono);
-                        $('#correoEmpleado').val(response.data.correo);
+    function getEmpleadoData(id) {
+        $.ajax({
+            url: '/empleados/edit/' + id,
+            method: 'GET',
+            success: function(response) {
+                if (response.status === 'success') {
+                    $('#hddIdEmpleado').val(response.data.idempleado);
+                    $('#nombreEmpleado').val(response.data.nombre);
+                    $('#apellidoPaternoEmpleado').val(response.data.apellidopaterno);
+                    $('#apellidoMaternoEmpleado').val(response.data.apellidomaterno);
+                    $('#telefonoEmpleado').val(response.data.telefono);
+                    $('#correoEmpleado').val(response.data.correo);
 
-                        $('#btnRegisterEmpleado').hide();
-                        $('#btnUpdateEmpleado').show();
-                        $('#modalEditEmpleado').modal('show');
-                    } else {
-                        Swal.fire('Error', response.msg, 'error');
-                    }
-                },
-                error: function() {
-                    Swal.fire('Error', 'Ocurrió un error al obtener los datos del empleado', 'error');
+                    $('#btnRegisterEmpleado').hide();
+                    $('#btnUpdateEmpleado').show();
+                    $('#modalEditEmpleado').modal('show');
+                } else {
+                    Swal.fire('Error', response.msg, 'error');
                 }
-            });
-        }
+            },
+            error: function() {
+                Swal.fire('Error', 'Ocurrió un error al obtener los datos del empleado', 'error');
+            }
+        });
+    }
 
-        $(document).ready(function() {
-            tblEmpleadosActivos = $('#tblEmpleadosActivos').DataTable({
-                processing: true,
-                serverSide: true,
-                language: configDatatableSpanish,
-                ajax: {
-                    url: '{{ route("empleados.data") }}',
-                    data: { activo: 'S' }
-                },
-                columns: [
-                    { data: 'idempleado' },
-                    { data: null, render: data => `${data.nombre} ${data.apellidopaterno} ${data.apellidomaterno}` },
-                    { data: 'telefono' },
-                    { data: 'correo' },
-                    { data: 'activo' },
-                    {
-                        data: null,
-                        orderable: false,
-                        searchable: false,
-                        render: function(data) {
-                            return `
-                            <button class="btn btn-sm btn-warning" onclick="getEmpleadoData(${data.idempleado})">Consultar</button>
-                            <button class="btn btn-sm btn-danger" onclick="toggleEmpleadoActive(${data.idempleado}, 'N')">Desactivar</button>
-                        `;
-                        }
+    $(document).ready(function() {
+        tblEmpleadosActivos = $('#tblEmpleadosActivos').DataTable({
+            processing: true,
+            serverSide: true,
+            language: configDatatableSpanish,
+            ajax: {
+                url: '{{ route("empleados.data") }}',
+                data: { activo: 'S' }
+            },
+            columns: [
+                { data: 'idempleado' },
+                { data: null, render: data => `${data.nombre} ${data.apellidopaterno} ${data.apellidomaterno}` },
+                { data: 'telefono' },
+                { data: 'correo' },
+                { data: 'activo' },
+                { data: 'fecharegistro' },
+                { data: 'fechaactualizacion' },
+                {
+                    data: null,
+                    orderable: false,
+                    searchable: false,
+                    render: function(data) {
+                        return `
+            <button class="btn btn-sm btn-warning" onclick="getEmpleadoData(${data.idempleado})">Consultar</button>
+            <button class="btn btn-sm btn-danger" onclick="toggleEmpleadoActive(${data.idempleado}, 'N')">Desactivar</button>
+        `;
                     }
-                ]
-            });
+                }
+            ]
 
-            tblEmpleadosInactivos = $('#tblEmpleadosInactivos').DataTable({
-                processing: true,
-                serverSide: true,
-                language: configDatatableSpanish,
-                ajax: {
-                    url: '{{ route("empleados.data") }}',
-                    data: { activo: 'N' }
-                },
-                columns: [
-                    { data: 'idempleado' },
-                    { data: null, render: data => `${data.nombre} ${data.apellidopaterno} ${data.apellidomaterno}` },
-                    { data: 'telefono' },
-                    { data: 'correo' },
-                    { data: 'activo' },
-                    {
-                        data: null,
-                        orderable: false,
-                        searchable: false,
-                        render: function(data) {
-                            return `
-                            <button class="btn btn-sm btn-success" onclick="toggleEmpleadoActive(${data.idempleado}, 'S')">Activar</button>
-                        `;
-                        }
-                    }
-                ]
-            });
         });
 
-        // Registrar nuevo empleado
-        $('#btnRegisterEmpleado').on('click', function () {
-            const data = {
-                nombre: $('#nombreEmpleado').val(),
-                apellidopaterno: $('#apellidoPaternoEmpleado').val(),
-                apellidomaterno: $('#apellidoMaternoEmpleado').val(),
-                telefono: $('#telefonoEmpleado').val(),
-                correo: $('#correoEmpleado').val(),
+        tblEmpleadosInactivos = $('#tblEmpleadosInactivos').DataTable({
+            processing: true,
+            serverSide: true,
+            language: configDatatableSpanish,
+            ajax: {
+                url: '{{ route("empleados.data") }}',
+                data: { activo: 'N' }
+            },
+            columns: [
+                { data: 'idempleado' },
+                { data: null, render: data => `${data.nombre} ${data.apellidopaterno} ${data.apellidomaterno}` },
+                { data: 'telefono' },
+                { data: 'correo' },
+                { data: 'activo' },
+                { data: 'fecharegistro' },
+                { data: 'fechaactualizacion' },
+                {
+                    data: null,
+                    orderable: false,
+                    searchable: false,
+                    render: function(data) {
+                        return `<button class="btn btn-sm btn-success" onclick="toggleEmpleadoActive(${data.idempleado}, 'S')">Activar</button>`;
+                    }
+                }
+            ]
+
+        });
+
+        $(document).on('click', '#btnAddEmpleado', function () {
+            abrirModalEmpleado();
+        });
+    });
+
+    $('#btnRegisterEmpleado').on('click', function () {
+        const nombre = $('#nombreEmpleado').val();
+        const apellidopaterno = $('#apellidoPaternoEmpleado').val();
+        const apellidomaterno = $('#apellidoMaternoEmpleado').val();
+        const telefono = $('#telefonoEmpleado').val();
+        const correo = $('#correoEmpleado').val();
+
+        if (!nombre || !apellidopaterno || !apellidomaterno) {
+            Swal.fire('Error', 'Nombre y apellidos son obligatorios', 'error');
+            return;
+        }
+
+        $.ajax({
+            url: '/empleados/store',
+            method: 'POST',
+            data: {
+                nombre,
+                apellidopaterno,
+                apellidomaterno,
+                telefono,
+                correo,
                 _token: '{{ csrf_token() }}'
-            };
-
-            if (!data.nombre || !data.apellidopaterno || !data.apellidomaterno) {
-                Swal.fire('Error', 'Nombre y apellidos son obligatorios', 'error');
-                return;
-            }
-
-            $.post('/empleados/create', data, function (response) {
+            },
+            success: function(response) {
                 if (response.status === 'success') {
                     Swal.fire('Éxito', response.msg, 'success');
                     $('#modalEditEmpleado').modal('hide');
@@ -241,29 +258,51 @@
                 } else {
                     Swal.fire('Error', response.msg, 'error');
                 }
-            }).fail(function () {
-                Swal.fire('Error', 'Ocurrió un error al guardar el empleado', 'error');
-            });
-        });
+            },
 
-        // Actualizar empleado
-        $('#btnUpdateEmpleado').on('click', function () {
-            const data = {
-                id: $('#hddIdEmpleado').val(),
-                nombre: $('#nombreEmpleado').val(),
-                apellidopaterno: $('#apellidoPaternoEmpleado').val(),
-                apellidomaterno: $('#apellidoMaternoEmpleado').val(),
-                telefono: $('#telefonoEmpleado').val(),
-                correo: $('#correoEmpleado').val(),
-                _token: '{{ csrf_token() }}'
-            };
+            error: function(xhr) {
+                console.error(xhr.responseText);
 
-            if (!data.nombre || !data.apellidopaterno || !data.apellidomaterno) {
-                Swal.fire('Error', 'Nombre y apellidos son obligatorios', 'error');
-                return;
+                let msg = 'Ocurrió un error al guardar el empleado';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    msg = xhr.responseJSON.message;
+                }
+
+                Swal.fire('Error', msg, 'error');
             }
+            // error: function(xhr) {
+            //     console.error(xhr.responseText);
+            //     Swal.fire('Error', 'Ocurrió un error al guardar el empleado', 'error');
+            // }
+        });
+    });
 
-            $.post('/empleados/update', data, function (response) {
+    $('#btnUpdateEmpleado').on('click', function () {
+        const id = $('#hddIdEmpleado').val();
+        const nombre = $('#nombreEmpleado').val();
+        const apellidopaterno = $('#apellidoPaternoEmpleado').val();
+        const apellidomaterno = $('#apellidoMaternoEmpleado').val();
+        const telefono = $('#telefonoEmpleado').val();
+        const correo = $('#correoEmpleado').val();
+
+        if (!nombre || !apellidopaterno || !apellidomaterno) {
+            Swal.fire('Error', 'Nombre y apellidos son obligatorios', 'error');
+            return;
+        }
+
+        $.ajax({
+            url: '/empleados/update',
+            method: 'POST',
+            data: {
+                id,
+                nombre,
+                apellidopaterno,
+                apellidomaterno,
+                telefono,
+                correo,
+                _token: '{{ csrf_token() }}'
+            },
+            success: function(response) {
                 if (response.status === 'success') {
                     Swal.fire('Éxito', response.msg, 'success');
                     $('#modalEditEmpleado').modal('hide');
@@ -272,9 +311,13 @@
                 } else {
                     Swal.fire('Error', response.msg, 'error');
                 }
-            }).fail(function () {
+            },
+            error: function(xhr) {
+                console.error(xhr.responseText);
                 Swal.fire('Error', 'Ocurrió un error al actualizar el empleado', 'error');
-            });
+            }
         });
-    </script>
-@endpush
+    });
+</script>
+
+{{--@endpush--}}

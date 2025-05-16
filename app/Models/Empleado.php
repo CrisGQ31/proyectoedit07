@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Empleado extends Model
 {
-    protected $table = 'empleados'; // nombre exacto de la tabla
+    protected $table = 'tblempleados'; // nombre exacto de la tabla
 
     protected $primaryKey = 'idempleado'; // clave primaria de la tabla
 

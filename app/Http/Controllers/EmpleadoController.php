@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Empleado;
-
+use Yajra\DataTables\Facades\DataTables;
 class EmpleadoController extends Controller
 {
     // Mostrar la vista
@@ -68,7 +68,7 @@ class EmpleadoController extends Controller
     public function update(Request $request)
     {
         $request->validate([
-            'id' => 'required|integer|exists:empleados,idempleado',
+            'id' => 'required|integer|exists:tblempleados,idempleado',
             'nombre' => 'required|string|max:100',
             'apellidopaterno' => 'required|string|max:100',
             'apellidomaterno' => 'required|string|max:100',
