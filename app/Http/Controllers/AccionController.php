@@ -19,7 +19,7 @@ class AccionController extends Controller
     {
         $query = Accion::query();
 
-        if ($request->activo) {
+        if ($request->has('activo') && in_array($request->activo, ['S', 'N'])) {
             $query->where('activo', $request->activo);
         }
 
@@ -44,8 +44,11 @@ class AccionController extends Controller
             'descripcion' => 'required|string|max:255',
         ]);
 
-        if ($request->id) {
-            $accion = Accion::findOrFail($request->id);
+            $id = $request->hddIdAccion ?? $request->id;
+            if ($id) {
+            $accion = Accion::findOrFail($id);
+//        if ($request->id) {
+//            $accion = Accion::findOrFail($request->id);
             $accion->descripcion = $request->descripcion;
             $accion->fechaactualizacion = now();
         } else {

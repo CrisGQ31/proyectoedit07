@@ -45,7 +45,7 @@
                     <h4 class="modal-title">Acción</h4>
                 </div>
                 <div class="modal-body">
-                    <input type="hidden" id="hddIdAccion" name="hddIdAccion">
+                    <input type="hidden" id="hddIdAccion" name="id">
                     <div class="form-group">
                         <label for="descripcionAccion">Descripción</label>
                         <input type="text" class="form-control" id="descripcionAccion" name="descripcionAccion">
@@ -152,27 +152,74 @@
             });
         });
 
-        $('#btnUpdateAccion').on('click', function () {
-            const id = $('#hddIdAccion').val();
-            const descripcion = $('#descripcionAccion').val();
+
+        $('#btnRegisterAccion').on('click', function () {
+            const id = $('#hddIdAccion').val().trim();
+            const descripcion = $('#descripcionAccion').val().trim();
+
             if (!descripcion) {
-                Swal.fire('Error', 'La descripción es obligatoria', 'error');
+                Swal.fire('Error', 'La descripción es obligatoria.', 'error');
                 return;
             }
 
-            $.post('/acciones/update', {
-                id,
-                descripcion,
+            const formData = {
+                descripcion: descripcion,
                 _token: '{{ csrf_token() }}'
-            }, function(response) {
-                if (response.status === 'success') {
-                    Swal.fire('Éxito', response.msg, 'success');
-                    $('#modalEditAccion').modal('hide');
-                    actualizarDatatableAcciones();
-                } else {
-                    Swal.fire('Error', response.msg, 'error');
+            };
+
+            // Si hay ID, se trata de una edición
+            if (id !== '') {
+                formData.id = id;
+            }
+
+            $.ajax({
+                url: '/acciones/store',
+                method: 'POST',
+                data: formData,
+                success: function (response) {
+                    if (response.status === 'success') {
+                        Swal.fire('Éxito', response.msg, 'success');
+                        $('#modalEditAccion').modal('hide');
+                        $('#formEditAccion')[0].reset();
+                        $('#hddIdAccion').val('');
+                        actualizarDatatableAcciones();
+                    } else {
+                        Swal.fire('Error', response.msg || 'Ocurrió un error.', 'error');
+                    }
+                },
+                error: function (xhr) {
+                    let errorMsg = 'Error al guardar.';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMsg = xhr.responseJSON.message;
+                    }
+                    console.error(xhr.responseText);
+                    Swal.fire('Error', errorMsg, 'error');
                 }
             });
         });
+
+
+    {{--$('#btnUpdateAccion').on('click', function () {--}}
+        {{--    const id = $('#hddIdAccion').val();--}}
+        {{--    const descripcion = $('#descripcionAccion').val();--}}
+        {{--    if (!descripcion) {--}}
+        {{--        Swal.fire('Error', 'La descripción es obligatoria', 'error');--}}
+        {{--        return;--}}
+        {{--    }--}}
+
+        {{--    $.post('/acciones/update', {--}}
+        {{--        id,--}}
+        {{--        descripcion,--}}
+        {{--        _token: '{{ csrf_token() }}'--}}
+        {{--    }, function(response) {--}}
+        {{--        if (response.status === 'success') {--}}
+        {{--            Swal.fire('Éxito', response.msg, 'success');--}}
+        {{--            $('#modalEditAccion').modal('hide');--}}
+        {{--            actualizarDatatableAcciones();--}}
+        {{--        } else {--}}
+        {{--            Swal.fire('Error', response.msg, 'error');--}}
+        {{--        }--}}
+        {{--    });--}}
+        {{--});--}}
     });
 </script>

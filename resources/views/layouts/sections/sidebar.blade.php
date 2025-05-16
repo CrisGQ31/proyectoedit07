@@ -59,7 +59,7 @@
 
             <li>
                 <a href="{{ route('acciones.index') }}" class="ajax-link">
-                    <i class="fa fa-users"></i> <span>ACCIONES</span>
+                    <i class="fa fa-flash"></i> <span>ACCIONES</span>
                 </a>
             </li>
 {{--            <li class="{{ request()->is('acciones.index') ? 'active' : '' }}">--}}
