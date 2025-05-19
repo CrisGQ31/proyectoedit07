@@ -1,6 +1,3 @@
-{{--@extends('layouts.dashboard')--}}
-
-{{--@section('content')--}}
 <section class="content-header">
     <h1>
         Acciones
@@ -33,6 +30,25 @@
             </table>
         </div>
     </div>
+
+    <div class="row mt-5">
+        <div class="col-lg-12">
+            <h3>Acciones Inactivas</h3>
+            <table id="tblAccionesInactivas" class="display" style="width:100%">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Descripción</th>
+                    <th>Activo</th>
+                    <th>Fecha Registro</th>
+                    <th>Fecha Actualización</th>
+                    <th>Acciones</th>
+                </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+
 </section>
 
 <!-- MODAL ACCION -->
@@ -71,6 +87,7 @@
 
     function actualizarDatatableAcciones() {
         tblAcciones.ajax.reload(null, false);
+        tblAccionesInactivas.ajax.reload(null, false);
     }
 
     function toggleAccion(id, status) {
@@ -102,6 +119,42 @@
         });
     }
 
+    function eliminarAccion(id) {
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: "¡Esta acción no se puede deshacer!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '/acciones/delete/' + id,
+                    method: 'DELETE',
+                    data: {
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            Swal.fire('Eliminado', response.msg, 'success');
+                            actualizarDatatableAcciones();
+                        } else {
+                            Swal.fire('Error', response.msg || 'No se pudo eliminar.', 'error');
+                        }
+                    },
+                    error: function(xhr) {
+                        console.error(xhr.responseText);
+                        Swal.fire('Error', 'Ocurrió un error al eliminar.', 'error');
+                    }
+                });
+            }
+        });
+    }
+
+
     $(document).ready(function() {
         tblAcciones = $('#tblAcciones').DataTable({
             processing: true,
@@ -112,6 +165,12 @@
                 data: { activo: 'S' }
             },
             columns: [
+                // {
+                //     data: null,
+                //     render: function (data, type, row, meta) {
+                //         return meta.row + 1;
+                //     }
+                // },
                 { data: 'clvacciones' },
                 { data: 'descripcion' },
                 { data: 'activo' },
@@ -125,31 +184,45 @@
                         return `
                             <button class="btn btn-sm btn-warning" onclick="getAccionData(${data.clvacciones})">Consultar</button>
                             <button class="btn btn-sm btn-danger" onclick="toggleAccion(${data.clvacciones}, 'N')">Desactivar</button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="eliminarAccion(${data.clvacciones})">Eliminar</button>
                         `;
                     }
                 }
             ]
         });
 
-        $('#btnRegisterAccion').on('click', function () {
-            const descripcion = $('#descripcionAccion').val();
-            if (!descripcion) {
-                Swal.fire('Error', 'La descripción es obligatoria', 'error');
-                return;
-            }
-
-            $.post('/acciones/store', {
-                descripcion,
-                _token: '{{ csrf_token() }}'
-            }, function(response) {
-                if (response.status === 'success') {
-                    Swal.fire('Éxito', response.msg, 'success');
-                    $('#modalEditAccion').modal('hide');
-                    actualizarDatatableAcciones();
-                } else {
-                    Swal.fire('Error', response.msg, 'error');
+        tblAccionesInactivas = $('#tblAccionesInactivas').DataTable({
+            processing: true,
+            serverSide: true,
+            language: configDatatableSpanish,
+            ajax: {
+                url: '{{ route("acciones.data") }}',
+                data: { activo: 'N' }
+            },
+            columns: [
+                // {
+                //     data: null,
+                //     render: function (data, type, row, meta) {
+                //         return meta.row + 1;
+                //     }
+                // },
+                { data: 'clvacciones' },
+                { data: 'descripcion' },
+                { data: 'activo' },
+                { data: 'fecharegistro' },
+                { data: 'fechaactualizacion' },
+                {
+                    data: null,
+                    orderable: false,
+                    searchable: false,
+                    render: function(data) {
+                        return `
+                            <button class="btn btn-sm btn-success" onclick="toggleAccion(${data.clvacciones}, 'S')">Activar</button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="eliminarAccion(${data.clvacciones})">Eliminar</button>
+                        `;
+                    }
                 }
-            });
+            ]
         });
 
 
@@ -197,29 +270,5 @@
                 }
             });
         });
-
-
-    {{--$('#btnUpdateAccion').on('click', function () {--}}
-        {{--    const id = $('#hddIdAccion').val();--}}
-        {{--    const descripcion = $('#descripcionAccion').val();--}}
-        {{--    if (!descripcion) {--}}
-        {{--        Swal.fire('Error', 'La descripción es obligatoria', 'error');--}}
-        {{--        return;--}}
-        {{--    }--}}
-
-        {{--    $.post('/acciones/update', {--}}
-        {{--        id,--}}
-        {{--        descripcion,--}}
-        {{--        _token: '{{ csrf_token() }}'--}}
-        {{--    }, function(response) {--}}
-        {{--        if (response.status === 'success') {--}}
-        {{--            Swal.fire('Éxito', response.msg, 'success');--}}
-        {{--            $('#modalEditAccion').modal('hide');--}}
-        {{--            actualizarDatatableAcciones();--}}
-        {{--        } else {--}}
-        {{--            Swal.fire('Error', response.msg, 'error');--}}
-        {{--        }--}}
-        {{--    });--}}
-        {{--});--}}
     });
 </script>

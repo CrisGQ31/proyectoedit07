@@ -8,6 +8,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\EmpleadoController;
 use App\Http\Controllers\AccionController;
+use App\Http\Controllers\PermisoController;
 
 
 // CREAR EL PRIMER USUARIO ADMINISTRADOR
@@ -89,13 +90,10 @@ Route::get('/proveedores/data', [ProveedorController::class, 'getData'])->name('
 
 // Ruta para obtener los detalles de un proveedor para edición (GET)
 Route::get('/proveedores/edit/{id}', [ProveedorController::class, 'edit'])->name('proveedores.edit');
-
 // Ruta para crear un nuevo proveedor (POST)
 Route::post('/proveedores/create', [ProveedorController::class, 'create'])->name('proveedores.create');
-
 // Ruta para actualizar un proveedor (POST)
 Route::post('/proveedores/update', [ProveedorController::class, 'update'])->name('proveedores.update');
-
 // Ruta para activar/desactivar un proveedor (POST)
 Route::post('/proveedores/toggle', [ProveedorController::class, 'toggle'])->name('proveedores.toggle');
 
@@ -125,6 +123,19 @@ Route::prefix('empleados')->group(function () {
     Route::post('/acciones/store', [App\Http\Controllers\AccionController::class, 'store'])->name('acciones.store');
     Route::get('/acciones/edit/{id}', [App\Http\Controllers\AccionController::class, 'edit']);
     Route::post('/acciones/toggle', [App\Http\Controllers\AccionController::class, 'toggle']);
+    Route::delete('/acciones/delete/{id}', [AccionController::class, 'destroy']);
+
+// Permisos
+Route::get('/permisos', [App\Http\Controllers\PermisoController::class, 'index'])->name('permisos.index');
+Route::get('/permisos/data', [App\Http\Controllers\PermisoController::class, 'data'])->name('permisos.data');
+Route::post('/permisos/store', [App\Http\Controllers\PermisoController::class, 'store'])->name('permisos.store');
+Route::get('/permisos/edit/{id}', [App\Http\Controllers\PermisoController::class, 'edit']);
+Route::post('/permisos/toggle', [App\Http\Controllers\PermisoController::class, 'toggle']);
+Route::delete('/permisos/delete/{id}', [App\Http\Controllers\PermisoController::class, 'destroy']);
+
+
+
+
 
 
 

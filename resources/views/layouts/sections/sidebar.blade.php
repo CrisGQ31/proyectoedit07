@@ -62,6 +62,12 @@
                     <i class="fa fa-flash"></i> <span>ACCIONES</span>
                 </a>
             </li>
+
+            <li>
+                <a href="{{ route('permisos.index') }}" class="ajax-link">
+                    <i class="fa fa-key"></i> <span>PERMISOS</span>
+                </a>
+            </li>
 {{--            <li class="{{ request()->is('acciones.index') ? 'active' : '' }}">--}}
 {{--                <a href="{{ url('acciones.index') }}">--}}
 {{--                    <i class="fa fa-bolt"></i> <span>ACCIONES</span>--}}

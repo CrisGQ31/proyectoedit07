@@ -80,4 +80,17 @@ class AccionController extends Controller
         ]);
     }
 
+    public function destroy($id)
+    {
+        try {
+            $accion = Accion::findOrFail($id);
+            $accion->delete();
+
+            return response()->json(['status' => 'success', 'msg' => 'Acción eliminada correctamente.']);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'msg' => 'No se pudo eliminar la acción.']);
+        }
+    }
+
+
 }
