@@ -226,9 +226,9 @@
         });
 
 
-        $('#btnRegisterAccion').on('click', function () {
-            const id = $('#hddIdAccion').val().trim();
-            const descripcion = $('#descripcionAccion').val().trim();
+        $('#btnRegisterPermiso').on('click', function () {
+            const id = $('#hddIdPermiso').val().trim();
+            const descripcion = $('#descripcionPermiso').val().trim();
 
             if (!descripcion) {
                 Swal.fire('Error', 'La descripción es obligatoria.', 'error');
@@ -240,35 +240,38 @@
                 _token: '{{ csrf_token() }}'
             };
 
-            // Si hay ID, se trata de una edición
             if (id !== '') {
-                formData.id = id;
-            }
-
-            $.ajax({
-                url: '/acciones/store',
-                method: 'POST',
-                data: formData,
-                success: function (response) {
+                // Se trata de una edición, llama al update
+                $.ajax({
+                    url: '/permisos/update/' + id,
+                    method: 'PUT',
+                    data: formData,
+                    success: function (response) {
+                        if (response.status === 'success') {
+                            Swal.fire('Éxito', response.msg, 'success');
+                            $('#modalEditPermiso').modal('hide');
+                            $('#formEditPermiso')[0].reset();
+                            actualizarDatatablePermisos();
+                        } else {
+                            Swal.fire('Error', response.msg || 'Ocurrió un error.', 'error');
+                        }
+                    }
+                });
+            } else {
+                // Registro nuevo
+                $.post('/permisos/store', formData, function (response) {
                     if (response.status === 'success') {
                         Swal.fire('Éxito', response.msg, 'success');
-                        $('#modalEditAccion').modal('hide');
-                        $('#formEditAccion')[0].reset();
-                        $('#hddIdAccion').val('');
-                        actualizarDatatableAcciones();
+                        $('#modalEditPermiso').modal('hide');
+                        $('#formEditPermiso')[0].reset();
+                        actualizarDatatablePermisos();
                     } else {
                         Swal.fire('Error', response.msg || 'Ocurrió un error.', 'error');
                     }
-                },
-                error: function (xhr) {
-                    let errorMsg = 'Error al guardar.';
-                    if (xhr.responseJSON && xhr.responseJSON.message) {
-                        errorMsg = xhr.responseJSON.message;
-                    }
-                    console.error(xhr.responseText);
-                    Swal.fire('Error', errorMsg, 'error');
-                }
-            });
+                });
+            }
         });
+
+
     });
 </script>

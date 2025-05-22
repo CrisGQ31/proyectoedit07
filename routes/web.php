@@ -9,6 +9,7 @@ use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\EmpleadoController;
 use App\Http\Controllers\AccionController;
 use App\Http\Controllers\PermisoController;
+use App\Http\Controllers\SolicitanteController;
 
 
 // CREAR EL PRIMER USUARIO ADMINISTRADOR
@@ -124,14 +125,24 @@ Route::prefix('empleados')->group(function () {
     Route::get('/acciones/edit/{id}', [App\Http\Controllers\AccionController::class, 'edit']);
     Route::post('/acciones/toggle', [App\Http\Controllers\AccionController::class, 'toggle']);
     Route::delete('/acciones/delete/{id}', [AccionController::class, 'destroy']);
+    //Route::post('/acciones/update/{id}', [App\Http\Controllers\AccionController::class, 'update'])->name('acciones.update');
+    Route::put('/acciones/update/{id}', [App\Http\Controllers\AccionController::class, 'update'])->name('acciones.update');
+
 
 // Permisos
-Route::get('/permisos', [App\Http\Controllers\PermisoController::class, 'index'])->name('permisos.index');
-Route::get('/permisos/data', [App\Http\Controllers\PermisoController::class, 'data'])->name('permisos.data');
-Route::post('/permisos/store', [App\Http\Controllers\PermisoController::class, 'store'])->name('permisos.store');
-Route::get('/permisos/edit/{id}', [App\Http\Controllers\PermisoController::class, 'edit']);
-Route::post('/permisos/toggle', [App\Http\Controllers\PermisoController::class, 'toggle']);
-Route::delete('/permisos/delete/{id}', [App\Http\Controllers\PermisoController::class, 'destroy']);
+Route::get('permisos', [PermisoController::class, 'index'])->name('permisos.index');
+Route::get('permisos/data', [PermisoController::class, 'data'])->name('permisos.data');
+Route::post('permisos/store', [PermisoController::class, 'store'])->name('permisos.store');
+Route::get('permisos/edit/{id}', [PermisoController::class, 'edit']);
+Route::put('permisos/update/{id}', [PermisoController::class, 'update']);
+Route::post('permisos/toggle', [PermisoController::class, 'toggle']);
+
+//solicitantes
+Route::get('solicitantes', [SolicitanteController::class, 'index'])->name('solicitantes.index');
+Route::get('solicitantes/data/{estado}', [SolicitanteController::class, 'data'])->name('solicitantes.data');
+Route::post('solicitantes/store', [SolicitanteController::class, 'store'])->name('solicitantes.store');
+Route::get('solicitantes/{id}/edit', [SolicitanteController::class, 'edit']);
+Route::post('solicitantes/toggle/{id}', [SolicitanteController::class, 'toggle']);
 
 
 

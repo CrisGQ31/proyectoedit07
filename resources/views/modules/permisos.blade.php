@@ -10,19 +10,20 @@
 
 <section class="content">
     <div>
-        <button class="btn btn-primary" onclick="abrirModalPermiso()">Agregar Permiso</button>
+        <button class="btn btn-primary" id="btnAddPermiso" onclick="abrirModalPermiso()">Agregar Permiso</button>
     </div>
 
     <div class="row mt-3">
         <div class="col-lg-12">
             <h3>Permisos Activos</h3>
-            <table id="tablaPermisosActivos" class="display" style="width:100%">
+            <table id="tblPermisos" class="display" style="width:100%">
                 <thead>
                 <tr>
                     <th>ID</th>
                     <th>Descripción</th>
-                    <th>Registro</th>
-                    <th>Actualización</th>
+                    <th>Activo</th>
+                    <th>Fecha Registro</th>
+                    <th>Fecha Actualización</th>
                     <th>Acciones</th>
                 </tr>
                 </thead>
@@ -30,18 +31,17 @@
         </div>
     </div>
 
-    <br>
-
-    <div class="row">
+    <div class="row mt-5">
         <div class="col-lg-12">
             <h3>Permisos Inactivos</h3>
-            <table id="tablaPermisosInactivos" class="display" style="width:100%">
+            <table id="tblPermisosInactivos" class="display" style="width:100%">
                 <thead>
                 <tr>
                     <th>ID</th>
                     <th>Descripción</th>
-                    <th>Registro</th>
-                    <th>Actualización</th>
+                    <th>Activo</th>
+                    <th>Fecha Registro</th>
+                    <th>Fecha Actualización</th>
                     <th>Acciones</th>
                 </tr>
                 </thead>
@@ -50,26 +50,26 @@
     </div>
 </section>
 
-<!-- MODAL -->
-<div class="modal fade" id="modalPermiso" tabindex="-1" role="dialog">
+<!-- MODAL PERMISO -->
+<div class="modal fade" id="modalEditPermiso" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <form id="formPermiso">
-                @csrf
+            <form id="formEditPermiso">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
                     <h4 class="modal-title">Permiso</h4>
                 </div>
                 <div class="modal-body">
-                    <input type="hidden" id="idpermiso" name="idpermiso">
+                    <input type="hidden" id="hddIdPermiso" name="id">
                     <div class="form-group">
-                        <label for="descripcion">Descripción</label>
-                        <input type="text" class="form-control" id="descripcion" name="descripcion" required>
+                        <label for="descripcionPermiso">Descripción</label>
+                        <input type="text" class="form-control" id="descripcionPermiso" name="descripcion">
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-                    <button id="btnGuardarPermiso" type="submit" class="btn btn-primary">Guardar</button>
+                    <button id="btnRegisterPermiso" type="button" class="btn btn-primary">Guardar</button>
+                    <button id="btnUpdatePermiso" type="button" class="btn btn-primary" style="display: none">Actualizar</button>
                 </div>
             </form>
         </div>
@@ -77,111 +77,158 @@
 </div>
 
 <script>
-    let tablaPermisosActivos, tablaPermisosInactivos;
-
     function abrirModalPermiso() {
-        $('#formPermiso')[0].reset();
-        $('#idpermiso').val('');
-        $('#modalPermiso').modal('show');
+        $('#formEditPermiso')[0].reset();
+        $('#btnRegisterPermiso').show();
+        $('#btnUpdatePermiso').hide();
+        $('#modalEditPermiso').modal('show');
     }
 
-    function cargarPermiso(id) {
-        $.get('/permisos/edit/' + id, function(data) {
-            $('#idpermiso').val(data.idpermiso);
-            $('#descripcion').val(data.descripcion);
-            $('#modalPermiso').modal('show');
-        });
+    function actualizarDatatablePermisos() {
+        tblPermisos.ajax.reload(null, false);
+        tblPermisosInactivos.ajax.reload(null, false);
     }
 
-    function cambiarEstado(id) {
-        $.post('/permisos/toggle', { id, _token: '{{ csrf_token() }}' }, function(resp) {
-            Swal.fire('Éxito', resp.message, 'success');
-            tablaPermisosActivos.ajax.reload();
-            tablaPermisosInactivos.ajax.reload();
-        });
-    }
-
-    function eliminarPermiso(id) {
-        Swal.fire({
-            title: '¿Eliminar?',
-            text: "Esto eliminará el permiso permanentemente",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Sí, eliminar'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    url: '/permisos/delete/' + id,
-                    method: 'DELETE',
-                    data: { _token: '{{ csrf_token() }}' },
-                    success: function(resp) {
-                        Swal.fire('Eliminado', resp.message, 'success');
-                        tablaPermisosActivos.ajax.reload();
-                        tablaPermisosInactivos.ajax.reload();
-                    }
-                });
+    function togglePermiso(id, status) {
+        $.post('/permisos/toggle', {
+            id: id,
+            activo: status,
+            _token: '{{ csrf_token() }}'
+        }, function(response) {
+            if (response.status === 'success') {
+                Swal.fire('Éxito', response.msg, 'success');
+                actualizarDatatablePermisos();
+            } else {
+                Swal.fire('Error', response.msg, 'error');
             }
         });
     }
 
-    $('#formPermiso').on('submit', function(e) {
-        e.preventDefault();
-        const datos = $(this).serialize();
-        $.post('/permisos/store', datos, function(resp) {
-            $('#modalPermiso').modal('hide');
-            Swal.fire('Éxito', resp.message, 'success');
-            tablaPermisosActivos.ajax.reload();
-            tablaPermisosInactivos.ajax.reload();
-        }).fail(function(xhr, status, error) {
-            let mensaje = 'No se pudo guardar el permiso';
-
-
-            if (xhr.status === 422 && xhr.responseJSON.errors) {
-                let errores = Object.values(xhr.responseJSON.errors).flat().join('\n');
-                mensaje = 'Errores de validación:\n' + errores;
+    function getPermisoData(id) {
+        $.get('/permisos/edit/' + id, function(response) {
+            if (response.status === 'success') {
+                $('#hddIdPermiso').val(response.data.idpermiso);
+                $('#descripcionPermiso').val(response.data.descripcion);
+                $('#btnRegisterPermiso').hide();
+                $('#btnUpdatePermiso').show();
+                $('#modalEditPermiso').modal('show');
+            } else {
+                Swal.fire('Error', response.msg, 'error');
             }
-
-            Swal.fire('Error', mensaje, 'error');
-            console.error("Error:", error);
-            console.error("Status:", status);
-            console.error("Respuesta:", xhr.responseText);
         });
-    });
+    }
 
     $(document).ready(function() {
-        tablaPermisosActivos = $('#tablaPermisosActivos').DataTable({
-            ajax: '/permisos/data',
+        tblPermisos = $('#tblPermisos').DataTable({
+            processing: true,
+            serverSide: true,
+            language: configDatatableSpanish,
+            ajax: {
+                url: '{{ route("permisos.data") }}',
+                data: { activo: 'S' }
+            },
             columns: [
                 { data: 'idpermiso' },
                 { data: 'descripcion' },
+                { data: 'activo' },
                 { data: 'fecharegistro' },
                 { data: 'fechaactualizacion' },
-                { data: 'acciones', orderable: false, searchable: false }
-            ],
-            language: configDatatableSpanish,
-            rowCallback: function(row, data) {
-                if (data.activo === 'Inactivo') {
-                    $(row).hide(); // Oculta si es inactivo
+                {
+                    data: null,
+                    orderable: false,
+                    searchable: false,
+                    render: function(data) {
+                        return `
+                            <button class="btn btn-sm btn-warning" onclick="getPermisoData(${data.idpermiso})">Consultar</button>
+                            <button class="btn btn-sm btn-danger" onclick="togglePermiso(${data.idpermiso}, 'N')">Desactivar</button>
+                        `;
+                    }
                 }
-            }
+            ]
         });
 
-        tablaPermisosInactivos = $('#tablaPermisosInactivos').DataTable({
-            ajax: '/permisos/data',
+        tblPermisosInactivos = $('#tblPermisosInactivos').DataTable({
+            processing: true,
+            serverSide: true,
+            language: configDatatableSpanish,
+            ajax: {
+                url: '{{ route("permisos.data") }}',
+                data: { activo: 'N' }
+            },
             columns: [
                 { data: 'idpermiso' },
                 { data: 'descripcion' },
+                { data: 'activo' },
                 { data: 'fecharegistro' },
                 { data: 'fechaactualizacion' },
-                { data: 'acciones', orderable: false, searchable: false }
-            ],
-            language: configDatatableSpanish,
-            rowCallback: function(row, data) {
-                if (data.activo === 'Activo') {
-                    $(row).hide(); // Oculta si es activo
+                {
+                    data: null,
+                    orderable: false,
+                    searchable: false,
+                    render: function(data) {
+                        return `
+                            <button class="btn btn-sm btn-success" onclick="togglePermiso(${data.idpermiso}, 'S')">Activar</button>
+                        `;
+                    }
                 }
+            ]
+        });
+
+        $('#btnRegisterPermiso').on('click', function () {
+            const descripcion = $('#descripcionPermiso').val().trim();
+
+            if (!descripcion) {
+                Swal.fire('Error', 'La descripción es obligatoria.', 'error');
+                return;
             }
+
+            const formData = {
+                descripcion: descripcion,
+                _token: '{{ csrf_token() }}'
+            };
+
+            $.post('/permisos/store', formData, function (response) {
+                if (response.status === 'success') {
+                    Swal.fire('Éxito', response.msg, 'success');
+                    $('#modalEditPermiso').modal('hide');
+                    $('#formEditPermiso')[0].reset();
+                    $('#hddIdPermiso').val('');
+                    actualizarDatatablePermisos();
+                } else {
+                    Swal.fire('Error', response.msg || 'Ocurrió un error.', 'error');
+                }
+            });
+        });
+
+
+        $('#btnUpdatePermiso').on('click', function () {
+            const id = $('#hddIdPermiso').val().trim();
+            const descripcion = $('#descripcionPermiso').val().trim();
+
+            if (!descripcion) {
+                Swal.fire('Error', 'La descripción es obligatoria.', 'error');
+                return;
+            }
+
+            $.ajax({
+                url: '/permisos/update/' + id,
+                method: 'PUT',
+                data: {
+                    descripcion: descripcion,
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function (response) {
+                    if (response.status === 'success') {
+                        Swal.fire('Éxito', response.msg, 'success');
+                        $('#modalEditPermiso').modal('hide');
+                        $('#formEditPermiso')[0].reset();
+                        $('#hddIdPermiso').val('');
+                        actualizarDatatablePermisos();
+                    } else {
+                        Swal.fire('Error', response.msg || 'Ocurrió un error.', 'error');
+                    }
+                }
+            });
         });
     });
 </script>
-

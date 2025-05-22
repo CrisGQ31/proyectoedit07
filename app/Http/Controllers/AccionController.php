@@ -91,6 +91,21 @@ class AccionController extends Controller
             return response()->json(['status' => 'error', 'msg' => 'No se pudo eliminar la acción.']);
         }
     }
+    public function update(Request $request, $id)
+    {
+        $accion = Accion::find($id);
+
+        if (!$accion) {
+            return response()->json(['status' => 'error', 'msg' => 'Acción no encontrada.']);
+        }
+
+        $accion->descripcion = $request->input('descripcion');
+        $accion->fechaactualizacion = now(); // Asegúrate de que este campo exista
+        $accion->save();
+
+        return response()->json(['status' => 'success', 'msg' => 'Acción actualizada correctamente.']);
+    }
+
 
 
 }
