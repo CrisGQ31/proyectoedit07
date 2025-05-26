@@ -29,7 +29,7 @@
         <form action="{{ route('validateUser') }}" method="POST">
             @csrf
             <div class="form-group has-feedback">
-                <input type="email" name="email" class="form-control" placeholder="Correo Electrónico" required autofocus>
+                <input type="text" name="correo" class="form-control" placeholder="Correo Electrónico" required autofocus>
                 <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
             </div>
             <div class="form-group has-feedback">

@@ -16,4 +16,10 @@ class Accion extends Model
         'fecharegistro',
         'fechaactualizacion',
     ];
+
+    public function bitacoras()
+    {
+        return $this->hasMany(Bitacora::class, 'clvacciones');
+    }
+
 }

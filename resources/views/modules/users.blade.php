@@ -105,7 +105,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
 
                     <div id="divChangePasswordUser" style="display: none">
                         <div class="row">
@@ -161,7 +161,7 @@
     validaInfoUsers = function(paso){
         rs = true;
         msg = 'Valida los siguientes datos:<br>';
-        if(paso == 1){ // REGISTRAR USUARIO 
+        if(paso == 1){ // REGISTRAR USUARIO
             if($("#nameUser").val() == ""){
                 msg += '- Nombre<br>';
                 rs = false;
@@ -174,7 +174,7 @@
                 msg += '- Correo Electr&oacute;nico no v&aacute;lido<br>';
                 rs = false;
             }
-            
+
             if($("#passwordUserAnt").val() == ""){ // REQUERIMOS CONTRASENIA ANTERIOR PARA ACTUALIZAR INFO POR SEGURIDAD
                 msg += '- Contraseña<br>';
                 rs = false;
@@ -215,7 +215,7 @@
                 }
             }
         }
-        
+
         if(!rs){
             Swal.fire({
                 icon: 'warning',
@@ -276,7 +276,7 @@
             // contentType: false,
             // processData: false,
             beforeSend: function(objeto) {
-                
+
             },
             success: function(dataGral) {
                 if (dataGral.status == 'success') {
@@ -284,7 +284,7 @@
                     $("#hddIdUser").val(dataUser.id);
                     $("#nameUser").val(dataUser.name);
                     $("#emailUser").val(dataUser.email);
-                    
+
                     // CAMBIAMOS BTNS
                     $("#btnRegisterUser").hide();
                     $("#btnUpdateUser").show();
@@ -302,10 +302,10 @@
                 }
             },
             complete: function(objeto, quepaso, otroobj){
-                
+
             },
             error: function(objeto, quepaso, otroobj) {
-                
+
             },
         });
     }
@@ -335,7 +335,7 @@
                         activo: (tipo==1?"S":"N"),
                     },
                     beforeSend: function(objeto) {
-                        
+
                     },
                     success: function(dataGral) {
                         if (dataGral.status == 'success') {
@@ -362,10 +362,10 @@
                         }
                     },
                     complete: function(objeto, quepaso, otroobj){
-                        
+
                     },
                     error: function(objeto, quepaso, otroobj) {
-                        
+
                     },
                 });
             }
@@ -399,7 +399,7 @@
                         password: $("#passwordUserAnt").val(),
                     },
                     beforeSend: function(objeto) {
-                        
+
                     },
                     success: function(dataGral) {
                         if (dataGral.status == 'success') {
@@ -426,10 +426,10 @@
                         }
                     },
                     complete: function(objeto, quepaso, otroobj){
-                        
+
                     },
                     error: function(objeto, quepaso, otroobj) {
-                        
+
                     },
                 });
             }
@@ -460,14 +460,14 @@
                         id: $("#hddIdUser").val(),
                         name: $("#nameUser").val(),
                         email: $("#emailUser").val(),
-                        
+
                         passwordChange: $('#passwordChange').is(':checked') ? 'S' : 'N',
                         password: $("#passwordUser").val(),
                         passwordUserAnt: $("#passwordUserAnt").val(),
                         passwordUserConfirm: $("#passwordUserConfirm").val(),
                     },
                     beforeSend: function(objeto) {
-                        
+
                     },
                     success: function(dataGral) {
                         if (dataGral.status == 'success') {
@@ -494,10 +494,10 @@
                         }
                     },
                     complete: function(objeto, quepaso, otroobj){
-                        
+
                     },
                     error: function(objeto, quepaso, otroobj) {
-                        
+
                     },
                 });
             }
@@ -517,7 +517,7 @@
                 }
             },
             columns: [
-                { data: 'id', name: 'id' },
+                { data: 'idusuarios', name: 'idusuarios' },
                 { data: 'name', name: 'name' },
                 { data: 'email', name: 'email' },
                 { data: 'activo', name: 'activo' },
@@ -548,7 +548,7 @@
                 }
             },
             columns: [
-                { data: 'id', name: 'id' },
+                { data: 'idusuarios', name: 'idusuarios' },
                 { data: 'name', name: 'name' },
                 { data: 'email', name: 'email' },
                 { data: 'activo', name: 'activo' },

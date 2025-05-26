@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Solicitante;
+use Yajra\DataTables\Facades\DataTables;
 use Carbon\Carbon;
-use DB;
 
 class SolicitanteController extends Controller
 {
@@ -14,67 +14,97 @@ class SolicitanteController extends Controller
         return view('modules.solicitantes');
     }
 
-    public function data($estado)
+    public function data(Request $request)
     {
-        $solicitantes = Solicitante::where('activo', $estado)->get()->map(function ($item) {
-            $item->nombre_completo = $item->nombre . ' ' . $item->apellidopaterno . ' ' . $item->apellidomaterno;
-            $item->acciones = '
-                <button class="btn btn-sm btn-primary" onclick="editarSolicitante(' . $item->idsolicitante . ')"><i class="fas fa-edit"></i></button>
-                <button class="btn btn-sm btn-danger" onclick="cambiarEstadoSolicitante(' . $item->idsolicitante . ')"><i class="fas fa-power-off"></i></button>
-            ';
-            return $item;
-        });
+        $estado = $request->input('activo', 'S'); // Por defecto activos
 
-        return response()->json(['data' => $solicitantes]);
+        $data = Solicitante::where('activo', $estado)->get();
+
+        return DataTables::of($data)->make(true);
     }
 
     public function store(Request $request)
     {
         try {
+            // Validaciones del lado del servidor
             $request->validate([
-                'nombre' => 'required|string',
-                'apellidopaterno' => 'required|string',
-                'apellidomaterno' => 'required|string',
-                'telefono' => 'required|string',
-                'rfc' => 'required|string',
-                'curp' => 'required|string',
+                'nombre' => 'required|string|max:100',
+                'apellidopaterno' => 'required|string|max:100',
+                'apellidomaterno' => 'required|string|max:100',
+                'telefono' => 'required|numeric|digits_between:8,15',
+                'rfc' => 'required|string|max:13',
+                'curp' => 'required|string|size:18',
             ]);
 
-            if ($request->idsolicitante) {
-                $solicitante = Solicitante::find($request->idsolicitante);
-                $solicitante->fechaactualizacion = now();
-            } else {
-                $solicitante = new Solicitante();
-                $solicitante->activo = 1;
-                $solicitante->fecharegistro = now();
-            }
-
-            $solicitante->nombre = $request->nombre;
-            $solicitante->apellidopaterno = $request->apellidopaterno;
-            $solicitante->apellidomaterno = $request->apellidomaterno;
-            $solicitante->telefono = $request->telefono;
-            $solicitante->rfc = $request->rfc;
-            $solicitante->curp = $request->curp;
+            $solicitante = new Solicitante($request->all());
+            $solicitante->activo = 'S';
+            $solicitante->fecharegistro = now();
+            $solicitante->fechaactualizacion = now();
             $solicitante->save();
 
-            return response()->json(['message' => 'Solicitante guardado correctamente.']);
+            return response()->json(['status' => 'success', 'msg' => 'Solicitante registrado correctamente.']);
         } catch (\Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+            return response()->json(['status' => 'error', 'msg' => 'Error al guardar el solicitante: ' . $e->getMessage()]);
         }
     }
 
+
+
     public function edit($id)
     {
-        return Solicitante::findOrFail($id);
+        $solicitante = Solicitante::find($id);
+
+        if (!$solicitante) {
+            return response()->json(['status' => 'error', 'msg' => 'Solicitante no encontrado.']);
+        }
+
+        return response()->json(['status' => 'success', 'data' => $solicitante]);
     }
 
-    public function toggle($id)
+    public function update(Request $request, $id)
     {
-        $solicitante = Solicitante::findOrFail($id);
-        $solicitante->activo = $solicitante->activo ? 0 : 1;
-        $solicitante->fechaactualizacion = Carbon::now();
-        $solicitante->save();
+        try {
+            // Validaciones
+            $request->validate([
+                'nombre' => 'required|string|max:100',
+                'apellidopaterno' => 'required|string|max:100',
+                'apellidomaterno' => 'required|string|max:100',
+                'telefono' => 'required|numeric|digits_between:8,15',
+                'rfc' => 'required|string|max:13',
+                'curp' => 'required|string|size:18',
+            ]);
 
-        return response()->json(['message' => 'Estado actualizado correctamente.']);
+            $solicitante = Solicitante::findOrFail($id);
+            $solicitante->fill($request->all());
+            $solicitante->fechaactualizacion = now();
+            $solicitante->save();
+
+            return response()->json(['status' => 'success', 'msg' => 'Solicitante actualizado correctamente.']);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'msg' => 'Error al actualizar el solicitante: ' . $e->getMessage()]);
+        }
     }
+
+
+    public function toggle(Request $request)
+    {
+        try {
+            $solicitante = Solicitante::find($request->id);
+
+            if (!$solicitante) {
+                return response()->json(['status' => 'error', 'msg' => 'Solicitante no encontrado.']);
+            }
+
+            $solicitante->activo = $request->activo;
+            $solicitante->fechaactualizacion = now();
+            $solicitante->save();
+
+            $estado = $solicitante->activo === 'S' ? 'activado' : 'desactivado';
+
+            return response()->json(['status' => 'success', 'msg' => "Solicitante $estado correctamente."]);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'msg' => 'Error al cambiar el estado del solicitante.']);
+        }
+    }
+
 }

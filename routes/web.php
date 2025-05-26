@@ -10,7 +10,10 @@ use App\Http\Controllers\EmpleadoController;
 use App\Http\Controllers\AccionController;
 use App\Http\Controllers\PermisoController;
 use App\Http\Controllers\SolicitanteController;
-
+use App\Http\Controllers\TipoJuicioController;
+use App\Http\Controllers\TipoEstatusController;
+use App\Http\Controllers\MateriaController;
+use App\Http\Controllers\BitacoraController;
 
 // CREAR EL PRIMER USUARIO ADMINISTRADOR
 Route::get('/createUserAdmin', [UsersController::class, 'createUserAdmin']);
@@ -139,13 +142,44 @@ Route::post('permisos/toggle', [PermisoController::class, 'toggle']);
 
 //solicitantes
 Route::get('solicitantes', [SolicitanteController::class, 'index'])->name('solicitantes.index');
-Route::get('solicitantes/data/{estado}', [SolicitanteController::class, 'data'])->name('solicitantes.data');
+Route::get('solicitantes/data', [SolicitanteController::class, 'data'])->name('solicitantes.data');
 Route::post('solicitantes/store', [SolicitanteController::class, 'store'])->name('solicitantes.store');
 Route::get('solicitantes/{id}/edit', [SolicitanteController::class, 'edit']);
-Route::post('solicitantes/toggle/{id}', [SolicitanteController::class, 'toggle']);
+Route::put('solicitantes/update/{id}', [SolicitanteController::class, 'update']);
+//Route::post('solicitantes/toggle/{id}', [SolicitanteController::class, 'toggle']);
+Route::post('solicitantes/toggle', [SolicitanteController::class, 'toggle']);
 
 
+//tipo de juicio
+Route::get('tipojuicio', [TipoJuicioController::class, 'index'])->name('tipojuicio.index');
+Route::get('tipojuicio/data/{estado}', [TipoJuicioController::class, 'data'])->name('tipojuicio.data');
+Route::post('tipojuicio/store', [TipoJuicioController::class, 'store'])->name('tipojuicio.store');
+Route::put('tipojuicio/update/{id}', [TipoJuicioController::class, 'update'])->name('tipojuicio.update');
+Route::get('tipojuicio/{id}/edit', [TipoJuicioController::class, 'edit']);
+Route::post('tipojuicio/toggle/{id}', [TipoJuicioController::class, 'toggle']);
 
+//Tipo de estatus
+Route::get('tipoestatus', [TipoEstatusController::class, 'index'])->name('tipoestatus.index');
+Route::get('tipoestatus/data', [TipoEstatusController::class, 'data'])->name('tipoestatus.data');
+Route::post('tipoestatus/store', [TipoEstatusController::class, 'store']);
+Route::get('tipoestatus/{id}/edit', [TipoEstatusController::class, 'edit']);
+Route::put('tipoestatus/update/{id}', [TipoEstatusController::class, 'update']);
+Route::post('tipoestatus/toggle/{id}', [TipoEstatusController::class, 'toggle']);
+
+//materias
+Route::get('materias', [MateriaController::class, 'index'])->name('materias.index');
+Route::get('materias/data', [MateriaController::class, 'data'])->name('materias.data');
+Route::post('materias/store', [MateriaController::class, 'store'])->name('materias.store');
+Route::get('materias/{id}/edit', [MateriaController::class, 'edit']);
+Route::put('materias/update/{id}', [MateriaController::class, 'update']);
+Route::post('materias/toggle/{id}', [MateriaController::class, 'toggle']);
+
+
+//Bitacora
+Route::prefix('bitacora')->group(function () {
+    Route::get('/', [BitacoraController::class, 'index'])->name('bitacora.index');
+    Route::get('/data', [BitacoraController::class, 'data'])->name('bitacora.data');
+});
 
 
 

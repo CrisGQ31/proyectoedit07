@@ -75,6 +75,33 @@
                 </a>
             </li>
 
+            <li>
+                <a href="{{ route('tipojuicio.index') }}" class="ajax-link">
+                    <i class="fa fa-gavel"></i> <span>TIPO DE JUICIO</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ route('tipoestatus.index') }}" class="ajax-link">
+                    <i class="fa fa-tasks"></i> <span>TIPO DE STATUS</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ route('materias.index') }}" class="ajax-link">
+                    <i class="fa fa-book"></i> <span>MATERIAS</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ route('bitacora.index') }}" class="ajax-link">
+                    <i class="fa fa-history"></i> <span>BITÁCORA</span>
+                </a>
+            </li>
+
+
+
+
 
             {{--            <li class="{{ request()->is('acciones.index') ? 'active' : '' }}">--}}
 {{--                <a href="{{ url('acciones.index') }}">--}}

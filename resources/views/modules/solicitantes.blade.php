@@ -1,186 +1,309 @@
-<div class="container-fluid">
-        <div class="card shadow mb-4">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="m-0 font-weight-bold text-primary">Gestión de Solicitantes</h5>
-                <button class="btn btn-success btn-sm" id="btnNuevoSolicitante">
-                    <i class="fas fa-plus-circle"></i> Nuevo Solicitante
-                </button>
-            </div>
-            <div class="card-body">
-                <ul class="nav nav-tabs" id="tabsSolicitantes">
-                    <li class="nav-item">
-                        <a class="nav-link active" data-toggle="tab" href="#activos">Activos</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" data-toggle="tab" href="#inactivos">Inactivos</a>
-                    </li>
-                </ul>
-                <div class="tab-content mt-3">
-                    <div class="tab-pane fade show active" id="activos">
-                        <table class="table table-bordered" id="tablaSolicitantesActivos">
-                            <thead class="thead-light">
-                            <tr>
-                                <th>Nombre Completo</th>
-                                <th>Teléfono</th>
-                                <th>RFC</th>
-                                <th>CURP</th>
-                                <th>Fecha Registro</th>
-                                <th>Acciones</th>
-                            </tr>
-                            </thead>
-                        </table>
-                    </div>
-                    <div class="tab-pane fade" id="inactivos">
-                        <table class="table table-bordered" id="tablaSolicitantesInactivos">
-                            <thead class="thead-light">
-                            <tr>
-                                <th>Nombre Completo</th>
-                                <th>Teléfono</th>
-                                <th>RFC</th>
-                                <th>CURP</th>
-                                <th>Fecha Registro</th>
-                                <th>Acciones</th>
-                            </tr>
-                            </thead>
-                        </table>
-                    </div>
-                </div>
-            </div>
+<!-- resources/views/modules/solicitantes.blade.php -->
+
+<section class="content-header">
+    <h1>
+        Solicitantes
+        <small>Gestión de solicitantes</small>
+    </h1>
+    <ol class="breadcrumb">
+        <li class="active">Solicitantes</li>
+    </ol>
+</section>
+
+<section class="content">
+    <div>
+        <button class="btn btn-primary" id="btnAddSolicitante" onclick="abrirModalSolicitante()">Agregar Solicitante</button>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-lg-12">
+            <h3>Solicitantes Activos</h3>
+            <table id="tblSolicitantes" class="display" style="width:100%">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Apellido Paterno</th>
+                    <th>Apellido Materno</th>
+                    <th>Teléfono</th>
+                    <th>RFC</th>
+                    <th>CURP</th>
+                    <th>Activo</th>
+                    <th>Fecha Registro</th>
+                    <th>Fecha Actualización</th>
+                    <th>Acciones</th>
+                </tr>
+                </thead>
+            </table>
         </div>
     </div>
 
-    <!-- Modal Soliciante -->
-    <div class="modal fade" id="modalSolicitante" tabindex="-1" role="dialog" aria-labelledby="modalSolicitanteLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <form id="formSolicitante">
-                <div class="modal-content">
-                    <div class="modal-header bg-primary text-white">
-                        <h5 class="modal-title" id="modalSolicitanteLabel">Nuevo Solicitante</h5>
-                        <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
+    <div class="row mt-5">
+        <div class="col-lg-12">
+            <h3>Solicitantes Inactivos</h3>
+            <table id="tblSolicitantesInactivos" class="display" style="width:100%">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Apellido Paterno</th>
+                    <th>Apellido Materno</th>
+                    <th>Teléfono</th>
+                    <th>RFC</th>
+                    <th>CURP</th>
+                    <th>Activo</th>
+                    <th>Fecha Registro</th>
+                    <th>Fecha Actualización</th>
+                    <th>Acciones</th>
+                </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</section>
+
+<!-- MODAL SOLICITANTE -->
+<div class="modal fade" id="modalEditSolicitante" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form id="formEditSolicitante">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                    <h4 class="modal-title">Solicitante</h4>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="hddIdSolicitante" name="idsolicitante">
+                    <div class="form-group">
+                        <label>Nombre</label>
+                        <input type="text" class="form-control" id="nombreSolicitante" name="nombre">
                     </div>
-                    <div class="modal-body">
-                        <input type="hidden" name="idsolicitante" id="idsolicitante">
-                        <div class="form-group">
-                            <label>Nombre</label>
-                            <input type="text" name="nombre" id="nombre" class="form-control" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Apellido Paterno</label>
-                            <input type="text" name="apellidopaterno" id="apellidopaterno" class="form-control" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Apellido Materno</label>
-                            <input type="text" name="apellidomaterno" id="apellidomaterno" class="form-control" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Teléfono</label>
-                            <input type="text" name="telefono" id="telefono" class="form-control" required>
-                        </div>
-                        <div class="form-group">
-                            <label>RFC</label>
-                            <input type="text" name="rfc" id="rfc" class="form-control" required>
-                        </div>
-                        <div class="form-group">
-                            <label>CURP</label>
-                            <input type="text" name="curp" id="curp" class="form-control" required>
-                        </div>
+                    <div class="form-group">
+                        <label>Apellido Paterno</label>
+                        <input type="text" class="form-control" id="apellidoPaternoSolicitante" name="apellidopaterno">
                     </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Guardar</button>
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <div class="form-group">
+                        <label>Apellido Materno</label>
+                        <input type="text" class="form-control" id="apellidoMaternoSolicitante" name="apellidomaterno">
                     </div>
+                    <div class="form-group">
+                        <label>Teléfono</label>
+                        <input type="text" class="form-control" id="telefonoSolicitante" name="telefono">
+                    </div>
+                    <div class="form-group">
+                        <label>RFC</label>
+                        <input type="text" class="form-control" id="rfcSolicitante" name="rfc">
+                    </div>
+                    <div class="form-group">
+                        <label>CURP</label>
+                        <input type="text" class="form-control" id="curpSolicitante" name="curp">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                    <button id="btnRegisterSolicitante" type="button" class="btn btn-primary">Guardar</button>
+                    <button id="btnUpdateSolicitante" type="button" class="btn btn-primary" style="display: none">Actualizar</button>
                 </div>
             </form>
         </div>
     </div>
+</div>
 
+<script>
+    function abrirModalSolicitante() {
+        $('#formEditSolicitante')[0].reset();
+        $('#btnRegisterSolicitante').show();
+        $('#btnUpdateSolicitante').hide();
+        $('#modalEditSolicitante').modal('show');
+    }
 
+    function actualizarDatatableSolicitantes() {
+        tblSolicitantes.ajax.reload(null, false);
+        tblSolicitantesInactivos.ajax.reload(null, false);
+    }
 
+    function toggleSolicitante(id, status) {
+        $.post('/solicitantes/toggle', {
+            id: id,
+            activo: status,
+            _token: '{{ csrf_token() }}'
+        }, function(response) {
+            if (response.status === 'success') {
+                Swal.fire('Éxito', response.msg, 'success');
+                actualizarDatatableSolicitantes();
+            } else {
+                Swal.fire('Error', response.msg, 'error');
+            }
+        });
+    }
 
-    <script>
-        $(document).ready(function () {
-            cargarTablas();
+    function getSolicitanteData(id) {
+        $.get('/solicitantes/' + id + '/edit', function(response) {
+            if (response.status === 'success') {
+                const d = response.data;
+                $('#hddIdSolicitante').val(d.idsolicitante);
+                $('#nombreSolicitante').val(d.nombre);
+                $('#apellidoPaternoSolicitante').val(d.apellidopaterno);
+                $('#apellidoMaternoSolicitante').val(d.apellidomaterno);
+                $('#telefonoSolicitante').val(d.telefono);
+                $('#rfcSolicitante').val(d.rfc);
+                $('#curpSolicitante').val(d.curp);
+                $('#btnRegisterSolicitante').hide();
+                $('#btnUpdateSolicitante').show();
+                $('#modalEditSolicitante').modal('show');
+            } else {
+                Swal.fire('Error', response.msg, 'error');
+            }
+        });
+    }
 
-            $('#btnNuevoSolicitante').click(function () {
-                $('#formSolicitante')[0].reset();
-                $('#idsolicitante').val('');
-                $('#modalSolicitanteLabel').text('Nuevo Solicitante');
-                $('#modalSolicitante').modal('show');
-            });
+    $(document).ready(function() {
+        tblSolicitantes = $('#tblSolicitantes').DataTable({
+            processing: true,
+            serverSide: true,
+            language: configDatatableSpanish,
+            ajax: {
+                url: '{{ route("solicitantes.data") }}',
+                data: { activo: 'S' }
+            },
+            columns: [
+                { data: 'idsolicitante' },
+                { data: 'nombre' },
+                { data: 'apellidopaterno' },
+                { data: 'apellidomaterno' },
+                { data: 'telefono' },
+                { data: 'rfc' },
+                { data: 'curp' },
+                { data: 'activo' },
+                { data: 'fecharegistro' },
+                { data: 'fechaactualizacion' },
+                {
+                    data: null,
+                    render: function(data) {
+                        return `
+                            <button class="btn btn-warning btn-sm" onclick="getSolicitanteData(${data.idsolicitante})">Consultar</button>
+                            <button class="btn btn-danger btn-sm" onclick="toggleSolicitante(${data.idsolicitante}, 'N')">Desactivar</button>
+                        `;
+                    }
+                }
+            ]
+        });
 
-            $('#formSolicitante').submit(function (e) {
-                e.preventDefault();
-                let formData = $(this).serialize();
-                $.post("{{ route('solicitantes.store') }}", formData, function (res) {
-                    $('#modalSolicitante').modal('hide');
-                    $('#tablaSolicitantesActivos').DataTable().ajax.reload();
-                    $('#tablaSolicitantesInactivos').DataTable().ajax.reload();
-                    Swal.fire('Éxito', res.message, 'success');
-                }).fail(function (err) {
-                    Swal.fire('Error', 'Ocurrió un error al guardar', 'error');
-                });
+        tblSolicitantesInactivos = $('#tblSolicitantesInactivos').DataTable({
+            processing: true,
+            serverSide: true,
+            language: configDatatableSpanish,
+            ajax: {
+                url: '{{ route("solicitantes.data") }}',
+                data: { activo: 'N' }
+            },
+            columns: [
+                { data: 'idsolicitante' },
+                { data: 'nombre' },
+                { data: 'apellidopaterno' },
+                { data: 'apellidomaterno' },
+                { data: 'telefono' },
+                { data: 'rfc' },
+                { data: 'curp' },
+                { data: 'activo' },
+                { data: 'fecharegistro' },
+                { data: 'fechaactualizacion' },
+                {
+                    data: null,
+                    render: function(data) {
+                        return `<button class="btn btn-success btn-sm" onclick="toggleSolicitante(${data.idsolicitante}, 'S')">Activar</button>`;
+                    }
+                }
+            ]
+        });
+
+        $('#btnRegisterSolicitante').on('click', function () {
+            const nombre = $('#nombreSolicitante').val().trim();
+            const apellidopaterno = $('#apellidoPaternoSolicitante').val().trim();
+            const apellidomaterno = $('#apellidoMaternoSolicitante').val().trim();
+            const telefono = $('#telefonoSolicitante').val().trim();
+            const rfc = $('#rfcSolicitante').val().trim();
+            const curp = $('#curpSolicitante').val().trim();
+
+            // ✅ Validaciones antes del envío
+            if (!nombre || !apellidopaterno || !apellidomaterno || !telefono || !rfc || !curp) {
+                Swal.fire('Error', 'Todos los campos son obligatorios.', 'error');
+                return;
+            }
+
+            if (curp.length !== 18) {
+                Swal.fire('Error', 'La CURP debe tener exactamente 18 caracteres.', 'error');
+                return;
+            }
+
+            const formData = {
+                nombre: nombre,
+                apellidopaterno: apellidopaterno,
+                apellidomaterno: apellidomaterno,
+                telefono: telefono,
+                rfc: rfc,
+                curp: curp,
+                _token: '{{ csrf_token() }}'
+            };
+
+            $.post('/solicitantes/store', formData, function (response) {
+                if (response.status === 'success') {
+                    Swal.fire('Éxito', response.msg, 'success');
+                    $('#modalEditSolicitante').modal('hide');
+                    $('#formEditSolicitante')[0].reset();
+                    actualizarDatatableSolicitantes();
+                } else {
+                    Swal.fire('Error', response.msg || 'Ocurrió un error.', 'error');
+                }
             });
         });
 
-        function cargarTablas() {
-            $('#tablaSolicitantesActivos').DataTable({
-                ajax: "{{ route('solicitantes.data', ['estado' => 1]) }}",
-                columns: [
-                    { data: 'nombre_completo' },
-                    { data: 'telefono' },
-                    { data: 'rfc' },
-                    { data: 'curp' },
-                    { data: 'fecharegistro' },
-                    { data: 'acciones', orderable: false, searchable: false }
-                ],
-                destroy: true
-            });
+        $('#btnUpdateSolicitante').on('click', function () {
+            const id = $('#hddIdSolicitante').val();
+            const nombre = $('#nombreSolicitante').val().trim();
+            const apellidopaterno = $('#apellidoPaternoSolicitante').val().trim();
+            const apellidomaterno = $('#apellidoMaternoSolicitante').val().trim();
+            const telefono = $('#telefonoSolicitante').val().trim();
+            const rfc = $('#rfcSolicitante').val().trim();
+            const curp = $('#curpSolicitante').val().trim();
 
-            $('#tablaSolicitantesInactivos').DataTable({
-                ajax: "{{ route('solicitantes.data', ['estado' => 0]) }}",
-                columns: [
-                    { data: 'nombre_completo' },
-                    { data: 'telefono' },
-                    { data: 'rfc' },
-                    { data: 'curp' },
-                    { data: 'fecharegistro' },
-                    { data: 'acciones', orderable: false, searchable: false }
-                ],
-                destroy: true
-            });
-        }
+            // ✅ Validaciones antes del envío
+            if (!nombre || !apellidopaterno || !apellidomaterno || !telefono || !rfc || !curp) {
+                Swal.fire('Error', 'Todos los campos son obligatorios.', 'error');
+                return;
+            }
 
-        function editarSolicitante(id) {
-            $.get("{{ url('solicitantes') }}/" + id + "/edit", function (data) {
-                $('#idsolicitante').val(data.idsolicitante);
-                $('#nombre').val(data.nombre);
-                $('#apellidopaterno').val(data.apellidopaterno);
-                $('#apellidomaterno').val(data.apellidomaterno);
-                $('#telefono').val(data.telefono);
-                $('#rfc').val(data.rfc);
-                $('#curp').val(data.curp);
-                $('#modalSolicitanteLabel').text('Editar Solicitante');
-                $('#modalSolicitante').modal('show');
-            });
-        }
+            if (curp.length !== 18) {
+                Swal.fire('Error', 'La CURP debe tener exactamente 18 caracteres.', 'error');
+                return;
+            }
 
-        function cambiarEstadoSolicitante(id) {
-            Swal.fire({
-                title: '¿Cambiar estado?',
-                text: "Este cambio actualizará el estado del solicitante.",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Sí, cambiar',
-                cancelButtonText: 'Cancelar'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.post("{{ url('solicitantes/toggle') }}/" + id, {_token: '{{ csrf_token() }}'}, function (res) {
-                        $('#tablaSolicitantesActivos').DataTable().ajax.reload();
-                        $('#tablaSolicitantesInactivos').DataTable().ajax.reload();
-                        Swal.fire('Actualizado', res.message, 'success');
-                    });
+            const formData = {
+                nombre: nombre,
+                apellidopaterno: apellidopaterno,
+                apellidomaterno: apellidomaterno,
+                telefono: telefono,
+                rfc: rfc,
+                curp: curp,
+                _token: '{{ csrf_token() }}'
+            };
+
+            $.ajax({
+                url: '/solicitantes/update/' + id,
+                method: 'PUT',
+                data: formData,
+                success: function (response) {
+                    if (response.status === 'success') {
+                        Swal.fire('Éxito', response.msg, 'success');
+                        $('#modalEditSolicitante').modal('hide');
+                        $('#formEditSolicitante')[0].reset();
+                        actualizarDatatableSolicitantes();
+                    } else {
+                        Swal.fire('Error', response.msg || 'Ocurrió un error.', 'error');
+                    }
                 }
             });
-        }
-    </script>
+        });
+
+    });
+</script>
 

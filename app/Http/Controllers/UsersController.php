@@ -1,4 +1,260 @@
 <?php
+//
+//namespace App\Http\Controllers;
+//
+//use Illuminate\Http\Request;
+//use App\Models\User; // Modelo mapeado a tblusuarios
+//use Illuminate\Support\Facades\DB;
+//use Illuminate\Support\Facades\Hash;
+//use Yajra\DataTables\Facades\DataTables;
+//use Illuminate\Support\Facades\Validator;
+//
+//class UsersController extends Controller
+//{
+//    public function createUserAdmin()
+//    {
+//        User::create([
+//            'nombre' => 'Juan Martin Castillo Peña',
+//            'apellidopaterno' => 'Castillo',
+//            'apellidomaterno' => 'Peña',
+//            'correo' => 'martin.castillo@pjedomex.gob.mx',
+//            'activo' => 'S',
+//            'fecharegistro' => now(),
+//            'fechaactualizacion' => now(),
+//            'contraseña' => Hash::make('123456'), // En tu tabla es 'contraseña'
+//        ]);
+//        return 'Usuario creado';
+//    }
+//
+//    public function usersDatas(Request $request)
+//    {
+//        $resultGral = ['status' => 'success', 'totalCount' => 0, 'msg' => 'TODO BIEN', "data" => []];
+//
+//        $dataTable = ($request->input('dataTable') == 'S');
+//
+//        try {
+//            $activo = $request->input('activo');
+//
+//            $query = User::query();
+//
+//            if (!is_null($activo) && $activo !== '') {
+//                $query->where('activo', $activo);
+//            }
+//
+//            if ($dataTable) {
+//                $resultGral = DataTables::of($query)->make(true);
+//            } else {
+//                $idUsuario = $request->input('id');
+//                if (empty($idUsuario) || !is_numeric($idUsuario)) {
+//                    throw new \Exception('PARAMETROS INCORRECTOS (IE)');
+//                }
+//                $query->where('idusuarios', $idUsuario);
+//                $resultGral["data"] = $query->get();
+//            }
+//        } catch (\Exception $e) {
+//            $resultGral['status'] = 'error';
+//            $resultGral['msg'] = $e->getMessage();
+//            $resultGral['typeCode'] = $e->getCode();
+//            $resultGral['type'] = 'error';
+//            $resultGral['typeAlert'] = 'danger';
+//
+//            $resultGral['recordsFiltered'] = 0;
+//            $resultGral['recordsTotal'] = 0;
+//            $resultGral['data'] = [];
+//        }
+//        return $resultGral;
+//    }
+//
+//    public function usersCreate(Request $request)
+//    {
+//        $resultGral = ['status' => 'success', 'totalCount' => 0, 'msg' => 'TODO BIEN', "data" => []];
+//
+//        DB::beginTransaction();
+//        try {
+//            $rules = [
+//                'nombre' => 'required|string|max:255',
+//                'apellidopaterno' => 'required|string|max:255',
+//                'apellidomaterno' => 'required|string|max:255',
+//                'correo' => 'required|email|string|max:500|unique:tblusuarios,correo',
+//                'contraseña' => 'required|string|min:6|max:255',
+//            ];
+//
+//            $messages = [
+//                'nombre.required' => 'El campo nombre es obligatorio.',
+//                'apellidopaterno.required' => 'El campo apellido paterno es obligatorio.',
+//                'apellidomaterno.required' => 'El campo apellido materno es obligatorio.',
+//                'correo.unique' => 'El correo ingresado no está disponible.',
+//                'correo.required' => 'El campo correo electrónico es obligatorio.',
+//                'correo.email' => 'Debe ingresar un correo electrónico válido.',
+//                'correo.max' => 'El correo no debe superar los 500 caracteres.',
+//                'contraseña.required' => 'La contraseña es obligatoria.',
+//                'contraseña.min' => 'La contraseña debe tener al menos 6 caracteres.',
+//                'contraseña.max' => 'La contraseña no debe superar los 255 caracteres.',
+//            ];
+//
+//            $validator = Validator::make($request->all(), $rules, $messages);
+//
+//            if ($validator->fails()) {
+//                throw new \Exception("- " . implode("<br>- ", $validator->errors()->all()));
+//            }
+//
+//            $validated = $validator->validated();
+//
+//            $created = User::create([
+//                'nombre' => $validated['nombre'],
+//                'apellidopaterno' => $validated['apellidopaterno'],
+//                'apellidomaterno' => $validated['apellidomaterno'],
+//                'correo' => $validated['correo'],
+//                'contraseña' => Hash::make($validated['contraseña']),
+//                'activo' => 'S',
+//                'fecharegistro' => now(),
+//                'fechaactualizacion' => now(),
+//            ]);
+//
+//            $resultGral['data'] = $created;
+//
+//            DB::commit();
+//        } catch (\Exception $e) {
+//            DB::rollBack();
+//            $resultGral['status'] = 'error';
+//            $resultGral['msg'] = $e->getMessage();
+//            $resultGral['typeCode'] = $e->getCode();
+//            $resultGral['type'] = 'error';
+//            $resultGral['typeAlert'] = 'danger';
+//        }
+//        return $resultGral;
+//    }
+//
+//    public function usersUpdate(Request $request)
+//    {
+//        $resultGral = ['status' => 'success', 'totalCount' => 0, 'msg' => 'TODO BIEN', "data" => []];
+//
+//        DB::beginTransaction();
+//        try {
+//            $idUser = $request->id;
+//
+//            $user = User::find($idUser);
+//            if (!$user) {
+//                throw new \Exception('Usuario no encontrado', 0);
+//            }
+//
+//            $rules = [
+//                'nombre' => 'required|string|max:255',
+//                'apellidopaterno' => 'required|string|max:255',
+//                'apellidomaterno' => 'required|string|max:255',
+//                'correo' => 'required|email|string|max:500|unique:tblusuarios,correo,' . $user->idusuarios . ',idusuarios',
+//            ];
+//
+//            if ($request->passwordChange == 'S') {
+//                if (!Hash::check($request->input('passwordUserAnt'), $user->contraseña)) {
+//                    throw new \Exception("No se logra validar contraseña actual.", 1);
+//                }
+//                $rules = array_merge($rules, [
+//                    'contraseña' => 'required|string|min:6|max:255',
+//                ]);
+//            }
+//
+//            $messages = [
+//                'nombre.required' => 'El campo nombre es obligatorio.',
+//                'apellidopaterno.required' => 'El campo apellido paterno es obligatorio.',
+//                'apellidomaterno.required' => 'El campo apellido materno es obligatorio.',
+//                'correo.unique' => 'El correo ingresado no está disponible.',
+//                'correo.required' => 'El campo correo electrónico es obligatorio.',
+//                'correo.email' => 'Debe ingresar un correo electrónico válido.',
+//                'correo.max' => 'El correo no debe superar los 500 caracteres.',
+//                'contraseña.required' => 'La contraseña es obligatoria.',
+//                'contraseña.min' => 'La contraseña debe tener al menos 6 caracteres.',
+//                'contraseña.max' => 'La contraseña no debe superar los 255 caracteres.',
+//            ];
+//
+//            $validator = Validator::make($request->all(), $rules, $messages);
+//
+//            if ($validator->fails()) {
+//                throw new \Exception("- " . implode("<br>- ", $validator->errors()->all()));
+//            }
+//
+//            $validated = $validator->validated();
+//
+//            if ($request->passwordChange == 'S') {
+//                $validated['contraseña'] = Hash::make($request->contraseña);
+//            }
+//
+//            $updated = $user->update($validated);
+//
+//            if (!$updated) {
+//                throw new \Exception('No se logró actualizar el usuario.', 0);
+//            }
+//
+//            $resultGral['data'] = $updated;
+//
+//            DB::commit();
+//        } catch (\Exception $e) {
+//            DB::rollBack();
+//            $resultGral['status'] = 'error';
+//            $resultGral['msg'] = $e->getMessage();
+//            $resultGral['typeCode'] = $e->getCode();
+//            $resultGral['type'] = 'error';
+//            $resultGral['typeAlert'] = 'danger';
+//        }
+//        return $resultGral;
+//    }
+//
+//    public function usersDeleteActive(Request $request)
+//    {
+//        $resultGral = ['status' => 'success', 'totalCount' => 0, 'msg' => 'TODO BIEN', "data" => []];
+//
+//        DB::beginTransaction();
+//        try {
+//            $idUser = $request->id;
+//
+//            $user = User::find($idUser);
+//            if (!$user) {
+//                throw new \Exception('Usuario no encontrado', 0);
+//            }
+//
+//            $rules = [
+//                'activo' => 'required|string|in:S,N|max:1',
+//            ];
+//
+//            $messages = [
+//                'activo.required' => 'Parámetros incorrectos.',
+//                'activo.string' => 'Parámetros incorrectos.',
+//                'activo.max' => 'Parámetros incorrectos.',
+//                'activo.in' => 'Parámetros incorrectos.',
+//            ];
+//
+//            $validator = Validator::make($request->all(), $rules, $messages);
+//
+//            if ($validator->fails()) {
+//                throw new \Exception("- " . implode("<br>- ", $validator->errors()->all()));
+//            }
+//
+//            $validated = $validator->validated();
+//
+//            $updated = $user->update($validated);
+//
+//            if (!$updated) {
+//                throw new \Exception('No se logró actualizar el usuario.', 0);
+//            }
+//
+//            $resultGral['data'] = $updated;
+//
+//            DB::commit();
+//        } catch (\Exception $e) {
+//            DB::rollBack();
+//            $resultGral['status'] = 'error';
+//            $resultGral['msg'] = $e->getMessage();
+//            $resultGral['typeCode'] = $e->getCode();
+//            $resultGral['type'] = 'error';
+//            $resultGral['typeAlert'] = 'danger';
+//        }
+//        return $resultGral;
+//    }
+//}
+//
+
+
+//<?php
 
 namespace App\Http\Controllers;
 
