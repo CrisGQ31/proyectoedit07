@@ -74,12 +74,24 @@ Route::middleware('auth')->group(function () {
     ;
 
     // MODULO DE USUARIOS
-    // DATATABLE
-    Route::get('/users/data', [UsersController::class, 'usersDatas'])->name('users.data');
-    // CRUD
-    Route::post('/users/create', [UsersController::class, 'usersCreate'])->name('users.create');
-    Route::post('/users/update', [UsersController::class, 'usersUpdate'])->name('users.update');
-    Route::post('/users/deteleActive', [UsersController::class, 'usersDeleteActive'])->name('users.deleteactive');
+
+    Route::prefix('usuarios')->name('usuarios.')->group(function () {
+        Route::get('/', [UsersController::class, 'index'])->name('index');
+        Route::get('/data/{activo}', [UsersController::class, 'data'])->name('data');
+        Route::post('/store', [UsersController::class, 'store'])->name('store');
+        Route::get('/edit/{id}', [UsersController::class, 'edit'])->name('edit');
+        Route::post('/toggle/{id}', [UsersController::class, 'toggle'])->name('toggle');
+    });
+
+//    Route::prefix('usuarios')->name('usuarios.')->group(function () {
+//        Route::get('/', [UsersController::class, 'index'])->name('index');
+//        Route::get('/data', [UsersController::class, 'data'])->name('data');
+//        Route::get('/get', [UsersController::class, 'get'])->name('get');
+//        Route::post('/store', [UsersController::class, 'store'])->name('store');
+//        Route::post('/update', [UsersController::class, 'update'])->name('update');
+//        Route::post('/toggle', [UsersController::class, 'toggle'])->name('toggle');
+//    });
+
 
 });
 

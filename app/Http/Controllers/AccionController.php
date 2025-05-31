@@ -37,39 +37,53 @@ class AccionController extends Controller
         ]);
     }
 
-    // Guardar o actualizar
+    // Guardar nuevo registro
     public function store(Request $request)
     {
         $request->validate([
             'descripcion' => 'required|string|max:255',
         ]);
 
-            $id = $request->hddIdAccion ?? $request->id;
-            if ($id) {
-            $accion = Accion::findOrFail($id);
-//        if ($request->id) {
-//            $accion = Accion::findOrFail($request->id);
-            $accion->descripcion = $request->descripcion;
-            $accion->fechaactualizacion = now();
-        } else {
-            $accion = new Accion();
-            $accion->descripcion = $request->descripcion;
-            $accion->activo = 'S';
-            $accion->fecharegistro = now();
-        }
-
+        $accion = new Accion();
+        $accion->descripcion = $request->descripcion;
+        $accion->activo = 'S';
+        $accion->fecharegistro = now();
+        $accion->fechaactualizacion = now();
         $accion->save();
 
         return response()->json([
             'status' => 'success',
-            'msg' => $request->id ? 'Acción actualizada correctamente.' : 'Acción registrada correctamente.'
+            'msg' => 'Acción registrada correctamente.'
         ]);
+    }
+
+    // Actualizar registro existente
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'descripcion' => 'required|string|max:255',
+        ]);
+
+        $accion = Accion::find($id);
+        if (!$accion) {
+            return response()->json(['status' => 'error', 'msg' => 'Acción no encontrada.']);
+        }
+
+        $accion->descripcion = $request->descripcion;
+        $accion->fechaactualizacion = now();
+        $accion->save();
+
+        return response()->json(['status' => 'success', 'msg' => 'Acción actualizada correctamente.']);
     }
 
     // Cambiar estado activo/inactivo
     public function toggle(Request $request)
     {
-        $accion = Accion::findOrFail($request->id);
+        $accion = Accion::find($request->id);
+        if (!$accion) {
+            return response()->json(['status' => 'error', 'msg' => 'Acción no encontrada.']);
+        }
+
         $accion->activo = $request->activo;
         $accion->fechaactualizacion = now();
         $accion->save();
@@ -80,6 +94,7 @@ class AccionController extends Controller
         ]);
     }
 
+    // Eliminar registro
     public function destroy($id)
     {
         try {
@@ -91,21 +106,4 @@ class AccionController extends Controller
             return response()->json(['status' => 'error', 'msg' => 'No se pudo eliminar la acción.']);
         }
     }
-    public function update(Request $request, $id)
-    {
-        $accion = Accion::find($id);
-
-        if (!$accion) {
-            return response()->json(['status' => 'error', 'msg' => 'Acción no encontrada.']);
-        }
-
-        $accion->descripcion = $request->input('descripcion');
-        $accion->fechaactualizacion = now(); // Asegúrate de que este campo exista
-        $accion->save();
-
-        return response()->json(['status' => 'success', 'msg' => 'Acción actualizada correctamente.']);
-    }
-
-
-
 }

@@ -1,578 +1,247 @@
-<section class="content-header">
-    <h1>
-        Usuarios
-        <small>Gesti&oacute;n de usuarios</small>
-    </h1>
-    <ol class="breadcrumb">
-        <li class="active">Usuarios</li>
-    </ol>
-</section>
+<style>
+    /* Títulos más grandes y separados */
+    h3 {
+        font-size: 2.2rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+    }
 
-<section class="content">
-    <div>
-        <button class="btn btn-primary" id="btnAddUser" onclick="abrirModalUsuarios()">Agregar Usuario</button>
-    </div>
-    <div class="row">
-        <div class="col-lg-12">
-            <h3>Usuarios Activos</h3>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-lg-12">
-            <table id="tblUsuariosActivos" class="display" style="width:100%">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nombre</th>
-                        <th>Email</th>
-                        <th>Activo</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-            </table>
-        </div>
-    </div>
-    <br>
-    <div class="row">
-        <div class="col-lg-12">
-            <h3>Usuarios Inactivos</h3>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-lg-12">
-            <table id="tblUsuariosInactivos" class="display" style="width:100%">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nombre</th>
-                        <th>Email</th>
-                        <th>Activo</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-            </table>
-        </div>
-    </div>
-</section>
+    h5 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
 
-<!-- MODAL USUARIOS -->
-<div class="modal fade" id="modalEditUser" tabindex="-1" role="dialog" aria-labelledby="modalEditUserLabel">
+    /* Botones más grandes y con margen */
+    .btn-lg {
+        padding: 0.6rem 1.2rem;
+        font-size: 1.1rem;
+    }
+
+    /* Margen inferior grande para separar secciones */
+    .section-usuarios {
+        margin-bottom: 4rem;
+    }
+
+    /* Margen entre botones */
+    .btn + .btn {
+        margin-left: 0.8rem;
+    }
+
+    /* Espaciado en filas de tabla para evitar que se vea amontonado */
+    table.dataTable tbody tr {
+        height: 50px;
+    }
+</style>
+
+<div class="container-fluid">
+    <h3>Gestión de Usuarios</h3>
+
+    <!-- Usuarios Activos -->
+    <div class="section-usuarios">
+        <h5>Usuarios Activos</h5>
+        <button class="btn btn-primary btn-lg mb-3" onclick="openUserModal()">Agregar Usuario</button>
+        <table class="table table-bordered table-striped" id="tablaUsuariosActivos" style="width: 100%;">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Apellido Paterno</th>
+                <th>Apellido Materno</th>
+                <th>Correo</th>
+                <th>Fecha Registro</th>
+                <th>Acciones</th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+
+    <!-- Usuarios Inactivos -->
+    <div class="section-usuarios">
+        <h5>Usuarios Inactivos</h5>
+        <table class="table table-bordered table-striped" id="tablaUsuariosInactivos" style="width: 100%;">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Apellido Paterno</th>
+                <th>Apellido Materno</th>
+                <th>Correo</th>
+                <th>Fecha Registro</th>
+                <th>Acciones</th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="modalUsuario" tabindex="-1" role="dialog" aria-labelledby="modalUsuarioLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <form id="formEditUser">
+        <form id="formUsuario">
+            @csrf
+            <input type="hidden" name="idusuarios" id="idusuarios">
+            <div class="modal-content">
                 <div class="modal-header">
+                    <h5 class="modal-title" id="modalUsuarioLabel">Formulario de Usuario</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
-                    <span aria-hidden="true">&times;</span>
+                        <span aria-hidden="true">&times;</span>
                     </button>
-                    <h4 class="modal-title" id="modalEditUserLabel">Usuario</h4>
                 </div>
-
                 <div class="modal-body">
-                    <input type="hidden" id="hddIdUser" name="hddIdUser">
-                    <div class="form-group has-feedback">
-                        <label for="nameUser" class="needed">Nombre</label>
-                        <input type="text" class="form-control" id="nameUser" name="nameUser">
-                        <span class="glyphicon glyphicon-user form-control-feedback"></span>
+                    <div class="form-group">
+                        <label for="nombre">Nombre:</label>
+                        <input type="text" name="nombre" id="nombre" class="form-control" required>
                     </div>
-                    <div class="row">
-                        <div class="col-xs-12">
-                            <div class="form-group has-feedback">
-                                <label for="emailUser" class="needed">Correo Electr&oacute;nico</label>
-                                <input type="email" class="form-control" id="emailUser" name="emailUser">
-                                <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
-                            </div>
-                        </div>
+                    <div class="form-group">
+                        <label for="apellidopaterno">Apellido Paterno:</label>
+                        <input type="text" name="apellidopaterno" id="apellidopaterno" class="form-control" required>
                     </div>
-
-                    <div class="row" id="divCheckChangePassword" style="display: none">
-                        <div class="col-xs-4 col-xs-offset-4">
-                            <center>
-                                <div class="checkbox icheck">
-                                    <label>
-                                    <input type="checkbox" id="passwordChange" name="passwordChange"> Cambiar Contrase&ntilde;a
-                                    </label>
-                                </div>
-                            </center>
-                        </div>
+                    <div class="form-group">
+                        <label for="apellidomaterno">Apellido Materno:</label>
+                        <input type="text" name="apellidomaterno" id="apellidomaterno" class="form-control" required>
                     </div>
-
-                    <div class="row" id="divPasswordUserAnt">
-                        <div class="col-xs-8 col-xs-offset-2">
-                            <div class="form-group has-feedback">
-                                <label for="passwordUserAnt">Contraseña</label>
-                                <input type="password" class="form-control" id="passwordUserAnt" name="passwordUserAnt">
-                                <span class="glyphicon glyphicon-eye-close form-control-feedback"></span>
-                            </div>
-                        </div>
+                    <div class="form-group">
+                        <label for="correo">Correo:</label>
+                        <input type="email" name="correo" id="correo" class="form-control" required>
                     </div>
-
-
-                    <div id="divChangePasswordUser" style="display: none">
-                        <div class="row">
-                            <div class="col-xs-8 col-xs-offset-2">
-                                <div class="form-group has-feedback">
-                                    <label for="passwordUser">Nueva Contraseña</label>
-                                    <input type="password" class="form-control" id="passwordUser" name="passwordUser">
-                                    <span class="glyphicon glyphicon-eye-close form-control-feedback"></span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-xs-8 col-xs-offset-2">
-                                <div class="form-group has-feedback">
-                                    <label for="passwordUserConfirm">Confirmar Contraseña</label>
-                                    <input type="password" class="form-control" id="passwordUserConfirm" name="passwordUserConfirm">
-                                    <span class="glyphicon glyphicon-eye-close form-control-feedback"></span>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="form-group">
+                        <label for="password">Contraseña:</label>
+                        <input type="password" name="password" id="password" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirm_password">Confirmar Contraseña:</label>
+                        <input type="password" id="confirm_password" class="form-control" required>
                     </div>
                 </div>
-
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-                    <button id="btnRegisterUser" type="button" class="btn btn-primary">Guardar</button>
-                    <button id="btnUpdateUser" type="button" class="btn btn-primary" style="display: none">Actualizar</button>
+                    <button type="submit" class="btn btn-success btn-lg">Guardar</button>
+                    <button type="button" class="btn btn-secondary btn-lg" data-dismiss="modal">Cerrar</button>
                 </div>
-            </form>
-        </div>
+            </div>
+        </form>
     </div>
 </div>
 
 <script>
+    $(document).ready(function () {
+        cargarUsuarios();
 
-    $('#modalEditUser').on('hidden.bs.modal', function () {
-        $("#btnRegisterUser").show();
-        $("#btnUpdateUser").hide();
-
-        $("#hddIdUser").val("");
-        $("#nameUser").val("");
-        $("#emailUser").val("");
-
-        $('#passwordChange').iCheck('uncheck').change();
-
-        $("#passwordUserAnt").val("");
-        $("#divPasswordUserAnt").show();
-        $("#divCheckChangePassword").hide();
-
-        actualizarDatatables();
-    });
-
-    validaInfoUsers = function(paso){
-        rs = true;
-        msg = 'Valida los siguientes datos:<br>';
-        if(paso == 1){ // REGISTRAR USUARIO
-            if($("#nameUser").val() == ""){
-                msg += '- Nombre<br>';
-                rs = false;
+        $('#formUsuario').on('submit', function(e){
+            e.preventDefault();
+            if ($('#password').val() !== $('#confirm_password').val()) {
+                Swal.fire('Error', 'Las contraseñas no coinciden', 'error');
+                return;
             }
 
-            if($("#emailUser").val() == ""){
-                msg += '- Correo Electr&oacute;nico<br>';
-                rs = false;
-            }else if(esCorreoValido($("#emailUser").val()) == false){
-                msg += '- Correo Electr&oacute;nico no v&aacute;lido<br>';
-                rs = false;
-            }
-
-            if($("#passwordUserAnt").val() == ""){ // REQUERIMOS CONTRASENIA ANTERIOR PARA ACTUALIZAR INFO POR SEGURIDAD
-                msg += '- Contraseña<br>';
-                rs = false;
-            }
-        }
-
-        if(paso == 2){ // ACTUALIZAR USUARIO
-            if($("#nameUser").val() == ""){
-                msg += '- Nombre<br>';
-                rs = false;
-            }
-            if($("#emailUser").val() == ""){
-                msg += '- Correo Electr&oacute;nico<br>';
-                rs = false;
-            }else if(esCorreoValido($("#emailUser").val()) == false){
-                msg += '- Correo Electr&oacute;nico no v&aacute;lido<br>';
-                rs = false;
-            }
-
-            if($('#passwordChange').is(':checked')){
-                if($("#passwordUserAnt").val() == ""){ // REQUERIMOS CONTRASENIA ANTERIOR PARA ACTUALIZAR INFO POR SEGURIDAD
-                    msg += '- Contraseña<br>';
-                    rs = false;
-                }
-
-                if($("#passwordUser").val() == ""){
-                    msg += '- Nueva Contraseña<br>';
-                    rs = false;
-                }else if(paso == 2 && $("#passwordUser").val() == $("#passwordUserAnt").val()){
-                    msg += '- La nueva contrase&ntilde;a no puede ser igual a la actual<br>';
-                    rs = false;
-                }else if($("#passwordUserConfirm").val() == ""){
-                    msg += '- Confirmar Contraseña<br>';
-                    rs = false;
-                }else if($("#passwordUser").val() != $("#passwordUserConfirm").val()){
-                    msg += '- Las contrase&ntilde;as no coinciden<br>';
-                    rs = false;
-                }
-            }
-        }
-
-        if(!rs){
-            Swal.fire({
-                icon: 'warning',
-                title: 'Aviso:',
-                html: msg,
-                buttonsStyling: false,
-                customClass: {
-                    confirmButton: 'btn btn-primary'
-                }
+            const formData = $(this).serialize();
+            $.post("{{ route('usuarios.store') }}", formData, function(res) {
+                $('#modalUsuario').modal('hide');
+                Swal.fire('Éxito', res.message, 'success');
+                $('#tablaUsuariosActivos').DataTable().ajax.reload();
+                $('#tablaUsuariosInactivos').DataTable().ajax.reload();
+            }).fail(function() {
+                Swal.fire('Error', 'No se pudo guardar el usuario', 'error');
             });
-        }
-        return rs;
-    }
-
-    $('#btnUpdateUser').on('click', function (event) {
-        if (validaInfoUsers(2)) {
-            updateUser();
-        }
-    });
-    $('#btnRegisterUser').on('click', function (event) {
-        if (validaInfoUsers(1)) {
-            createUser();
-        }
-    });
-    $('#passwordChange').on('ifChanged', function (event) {
-        if ($(this).is(':checked')) {
-            $("#divPasswordUserAnt").show();
-            $("#divChangePasswordUser").show();
-        } else {
-            $("#divPasswordUserAnt").hide();
-            $("#passwordUserAnt").val("");
-            $("#divChangePasswordUser").hide();
-            $("#passwordUser").val("");
-            $("#passwordUserConfirm").val("");
-        }
+        });
     });
 
-    abrirModalUsuarios = function() {
-        $("#modalEditUser").modal('show');
-    }
-
-    actualizarDatatables = function() {
-        tblUsuariosActivos.ajax.reload(null, false);
-        tblUsuariosInactivos.ajax.reload(null, false);
-    }
-
-    function getUserData(idUser) {
-        $.ajax({
-            type: 'GET',
-            url: '{{ route('users.data') }}',
-            // async: false,
-            dataType: 'json',
-            data: {
-                _token: '{{ csrf_token() }}', // TOKEN DE VALIDACION
-                id: idUser,
-            },
-            // to dataForSend
-            // contentType: false,
-            // processData: false,
-            beforeSend: function(objeto) {
-
-            },
-            success: function(dataGral) {
-                if (dataGral.status == 'success') {
-                    dataUser = dataGral.data[0];
-                    $("#hddIdUser").val(dataUser.id);
-                    $("#nameUser").val(dataUser.name);
-                    $("#emailUser").val(dataUser.email);
-
-                    // CAMBIAMOS BTNS
-                    $("#btnRegisterUser").hide();
-                    $("#btnUpdateUser").show();
-                    $("#passwordUserAnt").val("");
-                    $("#divPasswordUserAnt").hide();
-                    $("#divCheckChangePassword").show();
-
-                    abrirModalUsuarios();
-                }else{
-                    swal({
-                        type: dataGral.type,
-                        title: 'Error:',
-                        html: dataGral.msg,
-                    });
-                }
-            },
-            complete: function(objeto, quepaso, otroobj){
-
-            },
-            error: function(objeto, quepaso, otroobj) {
-
-            },
-        });
-    }
-
-    function deteleActiveUser(idUser, tipo = 2) {
-        Swal.fire({
-            title: '¿Quieres '+(tipo==1?"activar":"desactivar")+' a este usuario?',
-            html: 'Podr&aacute; revertir esta acci&oacute;n.',
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonText: 'S&iacute;, continuar',
-            cancelButtonText: 'Cancelar',
-            customClass: {
-                confirmButton: 'btn btn-primary',
-                cancelButton: 'btn btn-danger'
-            }
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    type: 'POST',
-                    url: '{{ route('users.deleteactive') }}',
-                    // async: false,
-                    dataType: 'json',
-                    data: {
-                        _token: '{{ csrf_token() }}', // TOKEN DE VALIDACION
-                        id: idUser,
-                        activo: (tipo==1?"S":"N"),
-                    },
-                    beforeSend: function(objeto) {
-
-                    },
-                    success: function(dataGral) {
-                        if (dataGral.status == 'success') {
-                            actualizarDatatables();
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Aviso:',
-                                html: 'Usuario '+(tipo==1?"activado":"desactivado")+' correctamente.',
-                                buttonsStyling: false,
-                                customClass: {
-                                    confirmButton: 'btn btn-primary'
-                                }
-                            });
-                        }else{
-                            Swal.fire({
-                                icon: dataGral.type,
-                                title: 'Aviso:',
-                                html: dataGral.msg,
-                                buttonsStyling: false,
-                                customClass: {
-                                    confirmButton: 'btn btn-primary'
-                                }
-                            });
-                        }
-                    },
-                    complete: function(objeto, quepaso, otroobj){
-
-                    },
-                    error: function(objeto, quepaso, otroobj) {
-
-                    },
-                });
-            }
-        });
-    }
-
-    function createUser() {
-        Swal.fire({
-            title: '¿Quieres registrar a este usuario?',
-            html: 'No se podr&aacute; revertir esta acci&oacute;n.',
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonText: 'S&iacute;, continuar',
-            cancelButtonText: 'Cancelar',
-            customClass: {
-                confirmButton: 'btn btn-primary',
-                cancelButton: 'btn btn-danger'
-            }
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    type: 'POST',
-                    url: '{{ route('users.create') }}',
-                    // async: false,
-                    dataType: 'json',
-                    data: {
-                        _token: '{{ csrf_token() }}', // TOKEN DE VALIDACION
-                        id: $("#hddIdUser").val(),
-                        name: $("#nameUser").val(),
-                        email: $("#emailUser").val(),
-                        password: $("#passwordUserAnt").val(),
-                    },
-                    beforeSend: function(objeto) {
-
-                    },
-                    success: function(dataGral) {
-                        if (dataGral.status == 'success') {
-                            $("#modalEditUser").modal('hide');
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Aviso:',
-                                html: 'Usuario registrado correctamente.',
-                                buttonsStyling: false,
-                                customClass: {
-                                    confirmButton: 'btn btn-primary'
-                                }
-                            });
-                        }else{
-                            Swal.fire({
-                                icon: dataGral.type,
-                                title: 'Aviso:',
-                                html: dataGral.msg,
-                                buttonsStyling: false,
-                                customClass: {
-                                    confirmButton: 'btn btn-primary'
-                                }
-                            });
-                        }
-                    },
-                    complete: function(objeto, quepaso, otroobj){
-
-                    },
-                    error: function(objeto, quepaso, otroobj) {
-
-                    },
-                });
-            }
-        });
-    }
-
-    function updateUser() {
-        Swal.fire({
-            title: '¿Quieres actualizar la informaci&oacute;n de este usuario?',
-            html: 'No se podr&aacute; revertir esta acci&oacute;n.',
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonText: 'S&iacute;, continuar',
-            cancelButtonText: 'Cancelar',
-            customClass: {
-                confirmButton: 'btn btn-primary',
-                cancelButton: 'btn btn-danger'
-            }
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    type: 'POST',
-                    url: '{{ route('users.update') }}',
-                    // async: false,
-                    dataType: 'json',
-                    data: {
-                        _token: '{{ csrf_token() }}', // TOKEN DE VALIDACION
-                        id: $("#hddIdUser").val(),
-                        name: $("#nameUser").val(),
-                        email: $("#emailUser").val(),
-
-                        passwordChange: $('#passwordChange').is(':checked') ? 'S' : 'N',
-                        password: $("#passwordUser").val(),
-                        passwordUserAnt: $("#passwordUserAnt").val(),
-                        passwordUserConfirm: $("#passwordUserConfirm").val(),
-                    },
-                    beforeSend: function(objeto) {
-
-                    },
-                    success: function(dataGral) {
-                        if (dataGral.status == 'success') {
-                            $("#modalEditUser").modal('hide');
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Aviso:',
-                                html: 'Usuario actualizado correctamente.',
-                                buttonsStyling: false,
-                                customClass: {
-                                    confirmButton: 'btn btn-primary'
-                                }
-                            });
-                        }else{
-                            Swal.fire({
-                                icon: dataGral.type,
-                                title: 'Aviso:',
-                                html: dataGral.msg,
-                                buttonsStyling: false,
-                                customClass: {
-                                    confirmButton: 'btn btn-primary'
-                                }
-                            });
-                        }
-                    },
-                    complete: function(objeto, quepaso, otroobj){
-
-                    },
-                    error: function(objeto, quepaso, otroobj) {
-
-                    },
-                });
-            }
-        });
-    }
-
-    $(document).ready(function() {
-        tblUsuariosActivos = $('#tblUsuariosActivos').DataTable({
+    function cargarUsuarios() {
+        $('#tablaUsuariosActivos').DataTable({
             processing: true,
-            serverSide: true,
-            language: configDatatableSpanish,
-            ajax: {
-                url: '{{ route('users.data') }}',
-                data: function (d) {
-                    d.activo = "S";
-                    d.dataTable = 'S';
-                }
-            },
+            serverSide: false,
+            ajax: '/usuarios/data/1', // Activos
             columns: [
-                { data: 'idusuarios', name: 'idusuarios' },
-                { data: 'name', name: 'name' },
-                { data: 'email', name: 'email' },
-                { data: 'activo', name: 'activo' },
+                { data: 'idusuarios' },
+                { data: 'nombre' },
+                { data: 'apellidopaterno' },
+                { data: 'apellidomaterno' },
+                { data: 'correo' },
+                { data: 'fecharegistro' },
                 {
-                    data: null,
-                    name: 'acciones',
+                    data: 'idusuarios',
                     orderable: false,
                     searchable: false,
-                    render: function (data, type, row, meta) {
+                    render: function(data) {
                         return `
-                            <button class="btn btn-sm btn-warning" onclick="getUserData(${row.id})">Consultar</button>
-                            <button class="btn btn-sm btn-danger" onclick="deteleActiveUser(${row.id})">Desactivar</button>
+                            <button class="btn btn-warning btn-md mr-2" onclick="editarUsuario(${data})">Editar</button>
+                            <button class="btn btn-danger btn-md" onclick="cambiarEstadoUsuario(${data})">Desactivar</button>
                         `;
                     }
                 }
-            ]
+            ],
+            destroy: true,
+            language: {
+                url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
+            }
         });
 
-        tblUsuariosInactivos = $('#tblUsuariosInactivos').DataTable({
+        $('#tablaUsuariosInactivos').DataTable({
             processing: true,
-            serverSide: true,
-            language: configDatatableSpanish,
-            ajax: {
-                url: '{{ route('users.data') }}',
-                data: function (d) {
-                    d.activo = "N";
-                    d.dataTable = 'S';
-                }
-            },
+            serverSide: false,
+            ajax: '/usuarios/data/0', // Inactivos
             columns: [
-                { data: 'idusuarios', name: 'idusuarios' },
-                { data: 'name', name: 'name' },
-                { data: 'email', name: 'email' },
-                { data: 'activo', name: 'activo' },
+                { data: 'idusuarios' },
+                { data: 'nombre' },
+                { data: 'apellidopaterno' },
+                { data: 'apellidomaterno' },
+                { data: 'correo' },
+                { data: 'fecharegistro' },
                 {
-                    data: null,
-                    name: 'acciones',
+                    data: 'idusuarios',
                     orderable: false,
                     searchable: false,
-                    render: function (data, type, row, meta) {
+                    render: function(data) {
                         return `
-                            <button class="btn btn-sm btn-success" onclick="deteleActiveUser(${row.id},1)">Activar</button>
+                            <button class="btn btn-success btn-md mr-2" onclick="editarUsuario(${data})">Editar</button>
+                            <button class="btn btn-primary btn-md" onclick="cambiarEstadoUsuario(${data})">Activar</button>
                         `;
                     }
                 }
-            ]
+            ],
+            destroy: true,
+            language: {
+                url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
+            }
         });
+    }
 
-        $(function () {
-            $('input').iCheck({
-                checkboxClass: 'icheckbox_square-blue',
-                radioClass: 'iradio_square-blue',
-                increaseArea: '20%'
-            });
+    function openUserModal(usuario = null) {
+        $('#formUsuario')[0].reset();
+        $('#idusuarios').val('');
+        if (usuario) {
+            $('#idusuarios').val(usuario.idusuarios);
+            $('#nombre').val(usuario.nombre);
+            $('#apellidopaterno').val(usuario.apellidopaterno);
+            $('#apellidomaterno').val(usuario.apellidomaterno);
+            $('#correo').val(usuario.correo);
+            $('#password, #confirm_password').val('');
+        }
+        $('#modalUsuario').modal('show');
+    }
+
+    function editarUsuario(id) {
+        $.get("{{ url('usuarios/edit') }}/" + id, function(data) {
+            openUserModal(data);
         });
+    }
 
-    });
+    function cambiarEstadoUsuario(id) {
+        Swal.fire({
+            title: '¿Está seguro?',
+            text: '¿Desea cambiar el estado del usuario?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, cambiar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.post("{{ url('usuarios/toggle') }}/" + id, {_token: '{{ csrf_token() }}'}, function(res) {
+                    Swal.fire('Listo', res.message, 'success');
+                    $('#tablaUsuariosActivos').DataTable().ajax.reload();
+                    $('#tablaUsuariosInactivos').DataTable().ajax.reload();
+                });
+            }
+        });
+    }
 </script>

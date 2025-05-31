@@ -35,19 +35,6 @@
                 </a>
             </li>
 
-            <li>
-                <a href="{{ route('products.index') }}" class="ajax-link">
-                    <i class="fa fa-cogs"></i> <span>PRODUCTOS</span>
-                </a>
-            </li>
-
-            <!-- NUEVO: Opción de PROVEEDORES -->
-            <li>
-                <a href="{{ route('proveedores.index') }}" class="ajax-link">
-                    <i class="fa fa-truck"></i> <span>PROVEEDORES</span>
-                </a>
-            </li>
-
             <!-- NUEVO: Opción de EMPLEADOS -->
             <li>
                 <a href="{{ route('empleados.index') }}" class="ajax-link">
@@ -55,13 +42,7 @@
                 </a>
             </li>
 
-            <!-- NUEVO: Opción de ACCIONES   -->
 
-            <li>
-                <a href="{{ route('acciones.index') }}" class="ajax-link">
-                    <i class="fa fa-flash"></i> <span>ACCIONES</span>
-                </a>
-            </li>
 
             <li>
                 <a href="{{ route('permisos.index') }}" class="ajax-link">
@@ -76,43 +57,43 @@
             </li>
 
             <li>
-                <a href="{{ route('tipojuicio.index') }}" class="ajax-link">
-                    <i class="fa fa-gavel"></i> <span>TIPO DE JUICIO</span>
-                </a>
-            </li>
-
-            <li>
-                <a href="{{ route('tipoestatus.index') }}" class="ajax-link">
-                    <i class="fa fa-tasks"></i> <span>TIPO DE STATUS</span>
-                </a>
-            </li>
-
-            <li>
-                <a href="{{ route('materias.index') }}" class="ajax-link">
-                    <i class="fa fa-book"></i> <span>MATERIAS</span>
-                </a>
-            </li>
-
-            <li>
                 <a href="{{ route('bitacora.index') }}" class="ajax-link">
                     <i class="fa fa-history"></i> <span>BITÁCORA</span>
                 </a>
             </li>
 
-
-
-
-
-            {{--            <li class="{{ request()->is('acciones.index') ? 'active' : '' }}">--}}
-{{--                <a href="{{ url('acciones.index') }}">--}}
-{{--                    <i class="fa fa-bolt"></i> <span>ACCIONES</span>--}}
-{{--                </a>--}}
-{{--            </li>--}}
-
+            <!-- NUEVO: Submenú CATÁLOGO -->
+            <li class="treeview">
+                <a href="#">
+                    <i class="fa fa-folder-open"></i> <span>CATÁLOGO</span>
+                    <span class="pull-right-container">
+                        <i class="fa fa-angle-left pull-right"></i>
+                    </span>
+                </a>
+                <ul class="treeview-menu">
+                    <li>
+                        <a href="{{ route('tipoestatus.index') }}" class="ajax-link">
+                            <i class="fa fa-tasks"></i> <span>TIPO DE STATUS</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('tipojuicio.index') }}" class="ajax-link">
+                            <i class="fa fa-gavel"></i> <span>TIPO DE JUICIO</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('materias.index') }}" class="ajax-link">
+                            <i class="fa fa-book"></i> <span>MATERIAS</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('acciones.index') }}" class="ajax-link">
+                            <i class="fa fa-flash"></i> <span>ACCIONES</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
 
         </ul>
     </section>
 </aside>
-
-
-
