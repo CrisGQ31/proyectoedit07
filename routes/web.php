@@ -134,14 +134,15 @@ Route::prefix('empleados')->group(function () {
 
 
 // Rutas para Acciones
-    Route::get('acciones/', [App\Http\Controllers\AccionController::class, 'index'])->name('acciones.index');
-    Route::get('/acciones/data', [App\Http\Controllers\AccionController::class, 'data'])->name('acciones.data');
-    Route::post('/acciones/store', [App\Http\Controllers\AccionController::class, 'store'])->name('acciones.store');
-    Route::get('/acciones/edit/{id}', [App\Http\Controllers\AccionController::class, 'edit']);
-    Route::post('/acciones/toggle', [App\Http\Controllers\AccionController::class, 'toggle']);
-    Route::delete('/acciones/delete/{id}', [AccionController::class, 'destroy']);
-    //Route::post('/acciones/update/{id}', [App\Http\Controllers\AccionController::class, 'update'])->name('acciones.update');
-    Route::put('/acciones/update/{id}', [App\Http\Controllers\AccionController::class, 'update'])->name('acciones.update');
+Route::prefix('acciones')->group(function () {
+    Route::get('/', [AccionController::class, 'index'])->name('acciones.index');            // Vista principal
+    Route::get('/data', [AccionController::class, 'data'])->name('acciones.data');          // DataTables (activo/inactivo)
+    Route::post('/store', [AccionController::class, 'store'])->name('acciones.store');      // Crear acción
+    Route::get('/edit/{id}', [AccionController::class, 'edit'])->name('acciones.edit');     // Obtener datos para editar
+    Route::put('/update/{id}', [AccionController::class, 'update'])->name('acciones.update'); // Actualizar acción
+    Route::post('/toggle', [AccionController::class, 'toggle'])->name('acciones.toggle');   // Activar/Desactivar
+    Route::delete('/delete/{id}', [AccionController::class, 'destroy'])->name('acciones.destroy'); // Eliminar
+});
 
 
 // Permisos

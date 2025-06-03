@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Bitacora;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\DB;
 
 class BitacoraController extends Controller
 {
@@ -13,18 +14,19 @@ class BitacoraController extends Controller
         return view('modules.bitacora');
     }
 
-    public function data(Request $request)
+    public function data()
     {
-        $query = Bitacora::with(['usuario', 'accion']);
+        $bitacoras = DB::table('tblbitacora as b')
+            ->join('tblusuarios as u', 'b.idusuarios', '=', 'u.idusuarios')
+            ->join('tblacciones as a', 'b.clvacciones', '=', 'a.clvacciones')
+            ->select(
+                'b.idbitacora',
+                'u.nombre', // ← Aquí estás trayendo el campo que necesita la vista
+                'a.descripcion',
+                'b.observaciones',
+                'b.fecharegistro'
+            );
 
-        return DataTables::of($query)
-            ->addColumn('nombre_usuario', function ($bitacora) {
-                return $bitacora->usuario->nombre . ' ' . $bitacora->usuario->apellidopaterno;
-            })
-            ->addColumn('descripcion_accion', function ($bitacora) {
-                return $bitacora->accion->descripcion ?? '';
-            })
-            ->rawColumns(['nombre_usuario', 'descripcion_accion'])
-            ->make(true);
+        return datatables()->of($bitacoras)->make(true);
     }
 }

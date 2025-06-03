@@ -20,8 +20,8 @@
                 ajax: '{{ route("bitacora.data") }}',
                 columns: [
                     { data: 'idbitacora' },
-                    { data: 'nombre_usuario' },
-                    { data: 'descripcion_accion' },
+                    { data: 'nombre' },
+                    { data: 'descripcion' },
                     { data: 'observaciones' },
                     { data: 'fecharegistro' }
                 ],

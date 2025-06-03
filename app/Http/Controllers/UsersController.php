@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use App\Models\User;
-
+use App\Helpers\BitacoraHelper;
 
 class UsersController extends Controller
 {
@@ -52,6 +52,10 @@ class UsersController extends Controller
                     'password' => Hash::make($request->password),
                     'fechaactualizacion' => $now
                 ]);
+
+            // Bitácora
+            BitacoraHelper::registrar('edicion_usuario', 'Actualización de usuario: ' . $request->nombre);
+
             return response()->json(['message' => 'Usuario actualizado correctamente']);
         } else {
             // Registro nuevo
@@ -65,6 +69,10 @@ class UsersController extends Controller
                 'fecharegistro' => $now,
                 'fechaactualizacion' => $now
             ]);
+
+            // Bitácora
+            BitacoraHelper::registrar('alta_usuario', 'Registro de nuevo usuario: ' . $request->nombre);
+
             return response()->json(['message' => 'Usuario registrado correctamente']);
         }
     }
@@ -91,6 +99,10 @@ class UsersController extends Controller
                 'activo' => $nuevoEstado,
                 'fechaactualizacion' => Carbon::now()
             ]);
+
+        // Bitácora
+        $accion = $nuevoEstado ? 'Activación de usuario: ' : 'Desactivación de usuario: ';
+        BitacoraHelper::registrar('toggle_usuario', $accion . $usuario->nombre);
 
         return response()->json(['message' => 'Estado actualizado correctamente']);
     }

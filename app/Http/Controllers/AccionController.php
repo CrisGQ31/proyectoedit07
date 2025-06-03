@@ -4,29 +4,55 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Accion;
-use Yajra\DataTables\Facades\DataTables;
+use App\Models\Bitacora;
+use DataTables;
+use Carbon\Carbon;
 
 class AccionController extends Controller
 {
-    // Mostrar la vista
     public function index()
     {
         return view('modules.acciones');
     }
 
-    // Obtener datos para DataTables
     public function data(Request $request)
     {
         $query = Accion::query();
 
-        if ($request->has('activo') && in_array($request->activo, ['S', 'N'])) {
-            $query->where('activo', $request->activo);
+        if ($request->filled('activo')) {
+            $query->where('activo', $request->activo); // Aquí ya esperas 1 o 0 directamente
         }
 
         return DataTables::of($query)->make(true);
     }
 
-    // Obtener un registro para editar
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'descripcion' => 'required|string|max:255',
+        ]);
+
+        $accion = Accion::create([
+            'descripcion' => $request->descripcion,
+            'activo' => 'S',
+            'fecharegistro' => Carbon::now(),
+            'fechaactualizacion' => Carbon::now()
+        ]);
+
+        // Registrar en la bitácora (si deseas que se registre aquí)
+        Bitacora::create([
+            'idusuarios' => auth()->id(), // asegúrate de tener login
+            'clvacciones' => $accion->clvacciones,
+            'observaciones' => 'Registro de nueva acción.',
+            'activo' => 1,
+            'fecharegistro' => now(),
+            'fechaactualizacion' => now()
+        ]);
+
+        return response()->json(['status' => 'success', 'msg' => 'Acción registrada correctamente.']);
+    }
+
     public function edit($id)
     {
         $accion = Accion::findOrFail($id);
@@ -37,73 +63,67 @@ class AccionController extends Controller
         ]);
     }
 
-    // Guardar nuevo registro
-    public function store(Request $request)
-    {
-        $request->validate([
-            'descripcion' => 'required|string|max:255',
-        ]);
-
-        $accion = new Accion();
-        $accion->descripcion = $request->descripcion;
-        $accion->activo = 'S';
-        $accion->fecharegistro = now();
-        $accion->fechaactualizacion = now();
-        $accion->save();
-
-        return response()->json([
-            'status' => 'success',
-            'msg' => 'Acción registrada correctamente.'
-        ]);
-    }
-
-    // Actualizar registro existente
     public function update(Request $request, $id)
     {
         $request->validate([
             'descripcion' => 'required|string|max:255',
         ]);
 
-        $accion = Accion::find($id);
-        if (!$accion) {
-            return response()->json(['status' => 'error', 'msg' => 'Acción no encontrada.']);
-        }
+        $accion = Accion::findOrFail($id);
+        $accion->update([
+            'descripcion' => $request->descripcion,
+            'fechaactualizacion' => now()
+        ]);
 
-        $accion->descripcion = $request->descripcion;
-        $accion->fechaactualizacion = now();
-        $accion->save();
+        Bitacora::create([
+            'idusuarios' => auth()->id(),
+            'clvacciones' => $accion->clvacciones,
+            'observaciones' => 'Actualización de acción.',
+            'activo' => 1,
+            'fecharegistro' => now(),
+            'fechaactualizacion' => now()
+        ]);
 
         return response()->json(['status' => 'success', 'msg' => 'Acción actualizada correctamente.']);
     }
 
-    // Cambiar estado activo/inactivo
     public function toggle(Request $request)
     {
-        $accion = Accion::find($request->id);
-        if (!$accion) {
-            return response()->json(['status' => 'error', 'msg' => 'Acción no encontrada.']);
-        }
+        $accion = Accion::findOrFail($request->id);
+        $accion->update([
+            'activo' => $request->activo, //=== 'S', // ? 1 : 0,
+            'fechaactualizacion' => now()
+        ]);
 
-        $accion->activo = $request->activo;
-        $accion->fechaactualizacion = now();
-        $accion->save();
+        Bitacora::create([
+            'idusuarios' => auth()->id(),
+            'clvacciones' => $accion->clvacciones,
+            'observaciones' => $accion->activo ? 'Activación de acción.' : 'Desactivación de acción.',
+            'activo' => 1,
+            'fecharegistro' => now(),
+            'fechaactualizacion' => now()
+        ]);
 
         return response()->json([
             'status' => 'success',
-            'msg' => $accion->activo === 'S' ? 'Acción activada correctamente.' : 'Acción desactivada correctamente.'
+            'msg' => $accion->activo ? 'Acción activada correctamente.' : 'Acción desactivada correctamente.'
         ]);
     }
 
-    // Eliminar registro
     public function destroy($id)
     {
-        try {
-            $accion = Accion::findOrFail($id);
-            $accion->delete();
+        $accion = Accion::findOrFail($id);
+        $accion->delete();
 
-            return response()->json(['status' => 'success', 'msg' => 'Acción eliminada correctamente.']);
-        } catch (\Exception $e) {
-            return response()->json(['status' => 'error', 'msg' => 'No se pudo eliminar la acción.']);
-        }
+        Bitacora::create([
+            'idusuarios' => auth()->id(),
+            'clvacciones' => $id,
+            'observaciones' => 'Eliminación de acción.',
+            'activo' => 0,
+            'fecharegistro' => now(),
+            'fechaactualizacion' => now()
+        ]);
+
+        return response()->json(['status' => 'success', 'msg' => 'Acción eliminada correctamente.']);
     }
 }

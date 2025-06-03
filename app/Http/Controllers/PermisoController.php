@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers;
 
-namespace App\Http\Controllers;
-
 use Illuminate\Http\Request;
 use App\Models\Permiso;
+use App\Helpers\BitacoraHelper; // ← IMPORTANTE
 
 class PermisoController extends Controller
 {
@@ -28,12 +27,15 @@ class PermisoController extends Controller
         ]);
 
         try {
-            Permiso::create([
+            $permiso = Permiso::create([
                 'descripcion' => $validated['descripcion'],
                 'activo' => 'S',
                 'fecharegistro' => now(),
                 'fechaactualizacion' => now(),
             ]);
+
+            // Bitácora
+            BitacoraHelper::registrar('alta_permiso', 'Registro de permiso: ' . $permiso->descripcion);
 
             return response()->json(['status' => 'success', 'msg' => 'Permiso registrado correctamente.']);
         } catch (\Exception $e) {
@@ -57,6 +59,9 @@ class PermisoController extends Controller
         $permiso->fechaactualizacion = now();
         $permiso->save();
 
+        // Bitácora
+        BitacoraHelper::registrar('edicion_permiso', 'Actualización de permiso: ' . $permiso->descripcion);
+
         return response()->json(['status' => 'success', 'msg' => 'Permiso actualizado']);
     }
 
@@ -68,6 +73,10 @@ class PermisoController extends Controller
         $permiso->activo = $request->activo;
         $permiso->fechaactualizacion = now();
         $permiso->save();
+
+        // Bitácora
+        $accion = $request->activo === 'S' ? 'Activación de permiso: ' : 'Desactivación de permiso: ';
+        BitacoraHelper::registrar('toggle_permiso', $accion . $permiso->descripcion);
 
         return response()->json(['status' => 'success', 'msg' => 'Estado actualizado']);
     }
