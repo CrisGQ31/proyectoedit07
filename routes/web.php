@@ -14,6 +14,8 @@ use App\Http\Controllers\TipoJuicioController;
 use App\Http\Controllers\TipoEstatusController;
 use App\Http\Controllers\MateriaController;
 use App\Http\Controllers\BitacoraController;
+use App\Http\Controllers\CarpetaController;
+use App\Http\Controllers\PermisosUsuarioController;
 
 // CREAR EL PRIMER USUARIO ADMINISTRADOR
 Route::get('/createUserAdmin', [UsersController::class, 'createUserAdmin']);
@@ -139,7 +141,7 @@ Route::prefix('acciones')->group(function () {
     Route::get('/data', [AccionController::class, 'data'])->name('acciones.data');          // DataTables (activo/inactivo)
     Route::post('/store', [AccionController::class, 'store'])->name('acciones.store');      // Crear acción
     Route::get('/edit/{id}', [AccionController::class, 'edit'])->name('acciones.edit');     // Obtener datos para editar
-    Route::put('/update/{id}', [AccionController::class, 'update'])->name('acciones.update'); // Actualizar acción
+    Route::post('/update/{id}', [AccionController::class, 'update'])->name('acciones.update'); // Actualizar acción
     Route::post('/toggle', [AccionController::class, 'toggle'])->name('acciones.toggle');   // Activar/Desactivar
     Route::delete('/delete/{id}', [AccionController::class, 'destroy'])->name('acciones.destroy'); // Eliminar
 });
@@ -194,8 +196,27 @@ Route::prefix('bitacora')->group(function () {
     Route::get('/data', [BitacoraController::class, 'data'])->name('bitacora.data');
 });
 
+//rutas para carpetas:
+
+    Route::get('carpetas/', [CarpetaController::class, 'index'])->name('carpetas.index');
+    Route::get('carpetas/data', [CarpetaController::class, 'data'])->name('carpetas.data');
+    Route::post('carpetas/store', [CarpetaController::class, 'store'])->name('carpetas.store');
+    Route::get('carpetas/{id}/edit', [CarpetaController::class, 'edit'])->name('carpetas.edit');
+    Route::post('carpetas/update/{id}', [CarpetaController::class, 'update'])->name('carpetas.update');
+    Route::post('carpetas/toggle/{id}', [CarpetaController::class, 'toggle'])->name('carpetas.toggle');
+    Route::delete('carpetas/delete/{id}', [CarpetaController::class, 'delete'])->name('carpetas.delete');
 
 
+//Permisos usuarios
+Route::prefix('permisosusuarios')->group(function () {
+    Route::get('/', [PermisosUsuarioController::class, 'index'])->name('permisosusuarios.index');
+    Route::get('/data', [PermisosUsuarioController::class, 'data'])->name('permisosusuarios.data');
+    Route::post('/store', [PermisosUsuarioController::class, 'store'])->name('permisosusuarios.store');
+    Route::get('/edit/{id}', [PermisosUsuarioController::class, 'edit'])->name('permisosusuarios.edit');
+    Route::put('/update/{id}', [PermisosUsuarioController::class, 'update'])->name('permisosusuarios.update');
+    Route::patch('/toggle/{id}', [PermisosUsuarioController::class, 'toggle'])->name('permisosusuarios.toggle');
+    Route::delete('/delete/{id}', [PermisosUsuarioController::class, 'destroy'])->name('permisosusuarios.destroy');
+});
 
 
 

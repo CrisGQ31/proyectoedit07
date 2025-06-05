@@ -62,6 +62,19 @@
                 </a>
             </li>
 
+            <li>
+                <a href="{{ route('carpetas.index') }}" class="ajax-link">
+                    <i class="fa fa-folder"></i> <span>CARPETAS</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ route('permisosusuarios.index') }}" class="ajax-link">
+                    <i class="fa fa-key"></i> <span>PERMISOS USUARIOS</span>
+                </a>
+            </li>
+
+
             <!-- NUEVO: Submenú CATÁLOGO -->
             <li class="treeview">
                 <a href="#">

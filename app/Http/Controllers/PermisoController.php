@@ -34,8 +34,8 @@ class PermisoController extends Controller
                 'fechaactualizacion' => now(),
             ]);
 
-            // Bitácora
-            BitacoraHelper::registrar('alta_permiso', 'Registro de permiso: ' . $permiso->descripcion);
+            // Bitácora (ID 1 = Alta de permiso)
+            BitacoraHelper::registrar(1, 'Registro de permiso: ' . $permiso->descripcion);
 
             return response()->json(['status' => 'success', 'msg' => 'Permiso registrado correctamente.']);
         } catch (\Exception $e) {
@@ -59,8 +59,8 @@ class PermisoController extends Controller
         $permiso->fechaactualizacion = now();
         $permiso->save();
 
-        // Bitácora
-        BitacoraHelper::registrar('edicion_permiso', 'Actualización de permiso: ' . $permiso->descripcion);
+        // Bitácora (ID 2 = Edición de permiso)
+        BitacoraHelper::registrar(2, 'Actualización de permiso: ' . $permiso->descripcion);
 
         return response()->json(['status' => 'success', 'msg' => 'Permiso actualizado']);
     }
@@ -74,9 +74,9 @@ class PermisoController extends Controller
         $permiso->fechaactualizacion = now();
         $permiso->save();
 
-        // Bitácora
-        $accion = $request->activo === 'S' ? 'Activación de permiso: ' : 'Desactivación de permiso: ';
-        BitacoraHelper::registrar('toggle_permiso', $accion . $permiso->descripcion);
+        // Bitácora (ID 3 = Activación o desactivación de permiso)
+        $accionTexto = $request->activo === 'S' ? 'Activación' : 'Desactivación';
+        BitacoraHelper::registrar(3, $accionTexto . ' de permiso: ' . $permiso->descripcion);
 
         return response()->json(['status' => 'success', 'msg' => 'Estado actualizado']);
     }

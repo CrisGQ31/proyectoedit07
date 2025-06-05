@@ -21,7 +21,7 @@
                 <tr>
                     <th>ID</th>
                     <th>Clave</th>
-                    <th>Descripción</th>
+                    <th>Tipo</th>
                     <th>Activo</th>
                     <th>Fecha Registro</th>
                     <th>Fecha Actualización</th>
@@ -40,7 +40,7 @@
                 <tr>
                     <th>ID</th>
                     <th>Clave</th>
-                    <th>Descripción</th>
+                    <th>Tipo</th>
                     <th>Activo</th>
                     <th>Fecha Registro</th>
                     <th>Fecha Actualización</th>
@@ -68,8 +68,12 @@
                         <input type="text" class="form-control" id="clvjuicio" name="clvjuicio">
                     </div>
                     <div class="form-group">
-                        <label for="descripcionJuicio">Descripción</label>
-                        <input type="text" class="form-control" id="descripcionJuicio" name="descripcion">
+                        <label for="tipo">Tipo</label>
+                        <select class="form-control" id="tipo" name="tipo">
+                            <option value="">Seleccione un tipo</option>
+                            <option value="oral">Oral</option>
+                            <option value="tradicional">Tradicional</option>
+                        </select>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -83,6 +87,8 @@
 </div>
 
 <script>
+    let tblTipoJuicio, tblTipoJuicioInactivos;
+
     function abrirModalTipoJuicio() {
         $('#formEditTipoJuicio')[0].reset();
         $('#btnRegisterTipoJuicio').show();
@@ -114,7 +120,7 @@
             if (response.status === 'success') {
                 $('#hddIdJuicio').val(response.data.idjuicio);
                 $('#clvjuicio').val(response.data.clvjuicio);
-                $('#descripcionJuicio').val(response.data.descripcion);
+                $('#tipo').val(response.data.tipo);
                 $('#btnRegisterTipoJuicio').hide();
                 $('#btnUpdateTipoJuicio').show();
                 $('#modalEditTipoJuicio').modal('show');
@@ -135,7 +141,7 @@
             columns: [
                 { data: 'idjuicio' },
                 { data: 'clvjuicio' },
-                { data: 'descripcion' },
+                { data: 'tipo' },
                 { data: 'activo' },
                 { data: 'fecharegistro' },
                 { data: 'fechaactualizacion' },
@@ -162,7 +168,7 @@
             columns: [
                 { data: 'idjuicio' },
                 { data: 'clvjuicio' },
-                { data: 'descripcion' },
+                { data: 'tipo' },
                 { data: 'activo' },
                 { data: 'fecharegistro' },
                 { data: 'fechaactualizacion' },
@@ -179,7 +185,7 @@
         $('#btnRegisterTipoJuicio').on('click', function () {
             const formData = {
                 clvjuicio: $('#clvjuicio').val().trim(),
-                descripcion: $('#descripcionJuicio').val().trim(),
+                tipo: $('#tipo').val().trim(),
                 _token: '{{ csrf_token() }}'
             };
 
@@ -199,7 +205,7 @@
             const id = $('#hddIdJuicio').val();
             const formData = {
                 clvjuicio: $('#clvjuicio').val().trim(),
-                descripcion: $('#descripcionJuicio').val().trim(),
+                tipo: $('#tipo').val().trim(),
                 _token: '{{ csrf_token() }}'
             };
 

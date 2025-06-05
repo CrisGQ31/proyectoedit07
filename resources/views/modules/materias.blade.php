@@ -55,8 +55,15 @@
                     </div>
                     <div class="form-group">
                         <label for="tipomateria">Tipo</label>
-                        <input type="text" id="tipomateria" name="tipomateria" class="form-control" required>
+                        <select id="tipomateria" name="tipomateria" class="form-control" required>
+                            <option value="">Selecciona un tipo</option>
+                            <option value="Civil">Civil</option>
+                            <option value="Mercantil">Mercantil</option>
+                            <option value="Penal">Penal</option>
+                            <option value="Laboral">Laboral</option>
+                        </select>
                     </div>
+
                     <div class="form-group">
                         <label for="descripcion">Descripción</label>
                         <input type="text" id="descripcion" name="descripcion" class="form-control" required>

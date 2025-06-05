@@ -16,7 +16,7 @@ class TipoJuicio extends Model
 
     protected $fillable = [
         'clvjuicio',
-        'descripcion',
+        'tipo',
         'activo',
         'fecharegistro',
         'fechaactualizacion',
