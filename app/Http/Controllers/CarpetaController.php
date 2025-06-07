@@ -2,134 +2,116 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Carpeta;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
+use Illuminate\Support\Facades\Validator;
 
 class CarpetaController extends Controller
 {
+    // Mostrar la vista principal
     public function index()
     {
-        $solicitantes = DB::table('tblsolicitante')
-            ->where('activo', 'S')
-            ->orderBy('nombre')
-            ->get();
-
-        $materias = DB::table('tblmateria')
-            ->where('activo', 'S')
-            ->orderBy('tipomateria')
-            ->get();
-
-        $juicios = DB::table('tbltipojuicio')
-            ->where('activo', 'S')
-            ->orderBy('tipo')
-            ->get();
-
-        return view('modules.carpetas', compact('solicitantes', 'materias', 'juicios'));
+        return view('modules.carpetas');
     }
 
-    public function data(Request $request)
+    // Obtener datos para DataTables
+    public function data()
     {
-        $activo = $request->get('activo') === 'N' ? 'N' : 'S';
-
-        $data = DB::table('tblcarpeta')
-            ->select(
-                'tblcarpeta.idcarpeta',
-                'tblcarpeta.fecharegistro',
-                DB::raw("CONCAT(s.nombre, ' ', s.apellidopaterno, ' ', s.apellidomaterno) AS nombre_solicitante"),
-                'm.tipomateria AS materia',
-                'j.tipo AS tipo_juicio'
-            )
-            ->join('tblsolicitante as s', 's.idsolicitante', '=', 'tblcarpeta.idsolicitante')
-            ->join('tblmateria as m', 'm.idmateria', '=', 'tblcarpeta.idmateria')
-            ->join('tbltipojuicio as j', 'j.idjuicio', '=', 'tblcarpeta.idjuicio')
-            ->where('tblcarpeta.activo', $activo)
-            ->orderByDesc('tblcarpeta.fecharegistro')
+        $carpetas = Carpeta::with(['solicitante', 'materia', 'juicio'])
+            ->select('tblcarpetas.*')
+            ->orderBy('idcarpeta', 'desc')
             ->get();
 
-        return response()->json(['data' => $data]);
+        return datatables()->of($carpetas)
+            ->addColumn('solicitante', function ($row) {
+                if (!$row->solicitante) return '';
+                return $row->solicitante->nombre . ' ' .
+                    $row->solicitante->apellidopaterno . ' ' .
+                    $row->solicitante->apellidomaterno;
+            })
+            ->addColumn('materia', fn($row) => $row->materia->tipomateria ?? '')
+            ->addColumn('juicio', fn($row) => $row->juicio->tipo ?? '')
+            ->addColumn('acciones', function ($row) {
+                $btns = '<button class="btn btn-sm btn-primary btn-edit" data-id="' . $row->idcarpeta . '">Editar</button> ';
+                $btns .= ($row->activo)
+                    ? '<button class="btn btn-sm btn-warning btn-toggle" data-id="' . $row->idcarpeta . '">Desactivar</button> '
+                    : '<button class="btn btn-sm btn-success btn-toggle" data-id="' . $row->idcarpeta . '">Activar</button> ';
+                $btns .= '<button class="btn btn-sm btn-danger btn-delete" data-id="' . $row->idcarpeta . '">Eliminar</button>';
+                return $btns;
+            })
+            ->rawColumns(['acciones'])
+            ->make(true);
     }
 
+    // Guardar nuevo registro o actualizar existente
     public function store(Request $request)
     {
-        try {
-            DB::table('tblcarpeta')->insert([
-                'idsolicitante' => $request->idsolicitante,
-                'idmateria'     => $request->idmateria,
-                'idjuicio'      => $request->idjuicio,
-                'sintesis'      => $request->sintesis,
-                'activo'        => 'S',
-                'fecharegistro' => Carbon::now(),
-                'fechaactualizacion' => Carbon::now(),
+        $rules = [
+            'idsolicitante' => 'required|exists:tblsolicitante,idsolicitante',
+            'idmateria'     => 'required|exists:tblmaterias,idmateria',
+            'idjuicio'      => 'required|exists:tbltipojuicio,idjuicio',
+            'sintesis'      => 'nullable|string',
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        if ($request->idcarpeta) {
+            // Actualizar
+            $carpeta = Carpeta::findOrFail($request->idcarpeta);
+            $carpeta->idsolicitante      = $request->idsolicitante;
+            $carpeta->idmateria          = $request->idmateria;
+            $carpeta->idjuicio           = $request->idjuicio;
+            $carpeta->sintesis           = $request->sintesis;
+            $carpeta->fechaactualizacion = now();
+            $carpeta->save();
+
+            return response()->json(['message' => 'Carpeta actualizada correctamente']);
+        } else {
+            // Crear nuevo: activo = 1 (activo)
+            Carpeta::create([
+                'idsolicitante'      => $request->idsolicitante,
+                'idmateria'          => $request->idmateria,
+                'idjuicio'           => $request->idjuicio,
+                'sintesis'           => $request->sintesis,
+                'activo'             => 1,
+                'fecharegistro'      => now(),
+                'fechaactualizacion' => null,
             ]);
 
-            return response()->json(['status' => 'success', 'msg' => 'Carpeta registrada correctamente.']);
-        } catch (\Exception $e) {
-            return response()->json(['status' => 'error', 'msg' => 'Error al registrar la carpeta.']);
+            return response()->json(['message' => 'Carpeta creada correctamente']);
         }
     }
 
+    // Obtener datos para editar
     public function edit($id)
     {
-        $carpeta = DB::table('tblcarpeta')->where('idcarpeta', $id)->first();
-
-        if ($carpeta) {
-            return response()->json(['status' => 'success', 'data' => $carpeta]);
-        }
-
-        return response()->json(['status' => 'error', 'msg' => 'Carpeta no encontrada.']);
+        $carpeta = Carpeta::findOrFail($id);
+        return response()->json($carpeta);
     }
 
-    public function update(Request $request, $id)
-    {
-        try {
-            DB::table('tblcarpeta')
-                ->where('idcarpeta', $id)
-                ->update([
-                    'idsolicitante' => $request->idsolicitante,
-                    'idmateria'     => $request->idmateria,
-                    'idjuicio'      => $request->idjuicio,
-                    'sintesis'      => $request->sintesis,
-                    'fechaactualizacion' => Carbon::now(),
-                ]);
-
-            return response()->json(['status' => 'success', 'msg' => 'Carpeta actualizada correctamente.']);
-        } catch (\Exception $e) {
-            return response()->json(['status' => 'error', 'msg' => 'Error al actualizar la carpeta.']);
-        }
-    }
-
+    // Activar o desactivar carpeta
     public function toggle($id)
     {
-        try {
-            $carpeta = DB::table('tblcarpeta')->where('idcarpeta', $id)->first();
+        $carpeta = Carpeta::findOrFail($id);
 
-            if (!$carpeta) {
-                return response()->json(['status' => 'error', 'msg' => 'Carpeta no encontrada.']);
-            }
+        // Cambiar el estado activo (0/1)
+        $carpeta->activo = !$carpeta->activo;
+        $carpeta->fechaactualizacion = now();
+        $carpeta->save();
 
-            $nuevoEstado = $carpeta->activo === 'S' ? 'N' : 'S';
-
-            DB::table('tblcarpeta')
-                ->where('idcarpeta', $id)
-                ->update([
-                    'activo' => $nuevoEstado,
-                    'fechaactualizacion' => Carbon::now()
-                ]);
-
-            return response()->json(['status' => 'success', 'msg' => 'Estado actualizado correctamente.']);
-        } catch (\Exception $e) {
-            return response()->json(['status' => 'error', 'msg' => 'Error al cambiar el estado.']);
-        }
+        return response()->json(['message' => 'Estado actualizado correctamente']);
     }
 
-    public function delete($id)
+    // Eliminar carpeta
+    public function destroy($id)
     {
-        try {
-            DB::table('tblcarpeta')->where('idcarpeta', $id)->delete();
-            return response()->json(['status' => 'success', 'msg' => 'Carpeta eliminada correctamente.']);
-        } catch (\Exception $e) {
-            return response()->json(['status' => 'error', 'msg' => 'Error al eliminar la carpeta.']);
-        }
+        $carpeta = Carpeta::findOrFail($id);
+        $carpeta->delete();
+
+        return response()->json(['message' => 'Carpeta eliminada correctamente']);
     }
 }

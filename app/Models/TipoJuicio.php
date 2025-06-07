@@ -21,5 +21,11 @@ class TipoJuicio extends Model
         'fecharegistro',
         'fechaactualizacion',
     ];
+
+    // Relación con carpetas
+    public function carpetas()
+    {
+        return $this->hasMany(Carpeta::class, 'idjuicio', 'idjuicio');
+    }
 }
 

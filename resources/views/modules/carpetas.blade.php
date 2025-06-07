@@ -1,231 +1,294 @@
-<!-- Encabezado -->
-<div class="content-header">
-    <h1>Carpetas</h1>
+<meta name="csrf-token" content="{{ csrf_token() }}">
+
+<div class="container-fluid">
+    <h1 class="mb-4">Gestión de Carpetas</h1>
+
+    <button class="btn btn-success mb-3" id="btnAdd">Nueva Carpeta</button>
+
+    <h3>Carpetas Activas</h3>
+    <table id="tableCarpetasActivas" class="table table-bordered table-striped">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Solicitante</th>
+            <th>Materia</th>
+            <th>Tipo de Juicio</th>
+            <th>Síntesis</th>
+            <th>Acciones</th>
+        </tr>
+        </thead>
+    </table>
+
+    <h3 class="mt-5">Carpetas Inactivas</h3>
+    <table id="tableCarpetasInactivas" class="table table-bordered table-striped">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Solicitante</th>
+            <th>Materia</th>
+            <th>Tipo de Juicio</th>
+            <th>Síntesis</th>
+            <th>Acciones</th>
+        </tr>
+        </thead>
+    </table>
 </div>
 
-<!-- Contenido principal -->
-<div class="content">
-    <ul class="nav nav-tabs" id="carpetaTabs">
-        <li class="active"><a href="#activos" data-toggle="tab">Activos</a></li>
-        <li><a href="#inactivos" data-toggle="tab">Inactivos</a></li>
-    </ul>
-
-    <div class="tab-content">
-        <div class="tab-pane active p-3" id="activos">
-            <button class="btn btn-primary my-3" id="btnAgregar"><i class="fa fa-plus"></i> Nueva Carpeta</button>
-            <table class="table table-bordered" id="tablaActivos" style="width: 100%">
-                <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Solicitante</th>
-                    <th>Materia</th>
-                    <th>Tipo de Juicio</th>
-                    <th>Fecha Registro</th>
-                    <th>Acciones</th>
-                </tr>
-                </thead>
-            </table>
-        </div>
-        <div class="tab-pane p-3" id="inactivos">
-            <table class="table table-bordered" id="tablaInactivos" style="width: 100%">
-                <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Solicitante</th>
-                    <th>Materia</th>
-                    <th>Tipo de Juicio</th>
-                    <th>Fecha Registro</th>
-                    <th>Acciones</th>
-                </tr>
-                </thead>
-            </table>
-        </div>
-    </div>
-</div>
-
-<!-- Modal -->
-<div class="modal fade" id="modalCarpeta" tabindex="-1">
+<!-- Modal para agregar/editar -->
+<div class="modal fade" id="carpetaModal" tabindex="-1" role="dialog" aria-labelledby="carpetaModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <form id="formCarpeta">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">Carpeta</h4>
+                    <h5 class="modal-title" id="carpetaModalLabel">Nueva Carpeta</h5>
+                    <!-- Botón de cerrar compatible con Bootstrap 4 -->
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
                 <div class="modal-body">
-                    <input type="hidden" id="idcarpeta">
+                    <input type="hidden" id="idcarpeta" name="idcarpeta">
 
-                    <div class="form-group">
-                        <label for="idsolicitante">Solicitante</label>
-                        <select id="idsolicitante" name="idsolicitante" class="form-control" required>
-                            <option value="">Seleccione</option>
-                            @foreach ($solicitantes as $s)
-                                <option value="{{ $s->idsolicitante }}">{{ $s->nombre }} {{ $s->apellidopaterno }} {{ $s->apellidomaterno }}</option>
+                    <div class="mb-3">
+                        <label for="idsolicitante" class="form-label">Solicitante</label>
+                        <select class="form-control" id="idsolicitante" name="idsolicitante" required>
+                            <option value="">Seleccione solicitante</option>
+                            @foreach(\App\Models\Solicitante::where('activo', 'S')->get() as $sol)
+                                <option value="{{ $sol->idsolicitante }}">{{ $sol->nombre }} {{ $sol->apellidopaterno }} {{ $sol->apellidomaterno }}</option>
                             @endforeach
                         </select>
                     </div>
 
-                    <div class="form-group">
-                        <label for="idmateria">Materia</label>
-                        <select id="idmateria" name="idmateria" class="form-control" required>
-                            <option value="">Seleccione</option>
-                            @foreach ($materias as $m)
-                                <option value="{{ $m->idmateria }}">{{ $m->tipomateria }}</option>
+                    <div class="mb-3">
+                        <label for="idmateria" class="form-label">Materia</label>
+                        <select class="form-control" id="idmateria" name="idmateria" required>
+                            <option value="">Seleccione materia</option>
+                            @foreach(\App\Models\Materia::where('activo', 'S')->get() as $mat)
+                                <option value="{{ $mat->idmateria }}">{{ $mat->tipomateria }}</option>
                             @endforeach
                         </select>
                     </div>
 
-                    <div class="form-group">
-                        <label for="idjuicio">Tipo de Juicio</label>
-                        <select id="idjuicio" name="idjuicio" class="form-control" required>
-                            <option value="">Seleccione</option>
-                            @foreach ($juicios as $j)
-                                <option value="{{ $j->idjuicio }}">{{ $j->tipo }}</option>
+                    <div class="mb-3">
+                        <label for="idjuicio" class="form-label">Tipo de Juicio</label>
+                        <select class="form-control" id="idjuicio" name="idjuicio" required>
+                            <option value="">Seleccione tipo de juicio</option>
+                            @foreach(\App\Models\TipoJuicio::where('activo', 'S')->get() as $jui)
+                                <option value="{{ $jui->idjuicio }}">{{ $jui->tipo }}</option>
                             @endforeach
                         </select>
                     </div>
 
-                    <div class="form-group">
-                        <label for="sintesis">Síntesis</label>
-                        <textarea id="sintesis" name="sintesis" class="form-control" rows="3" placeholder="Escribe una síntesis (opcional)"></textarea>
+                    <div class="mb-3">
+                        <label for="sintesis" class="form-label">Síntesis</label>
+                        <textarea class="form-control" id="sintesis" name="sintesis" rows="3" placeholder="(Opcional)"></textarea>
                     </div>
 
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Guardar</button>
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="btnSave">Guardar</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
                 </div>
             </div>
         </form>
     </div>
 </div>
 
-<!-- Script -->
 <script>
-    $(function () {
-        const idioma = {
-            lengthMenu: "Mostrar _MENU_ registros",
-            zeroRecords: "No se encontraron resultados",
-            info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
-            infoEmpty: "Mostrando 0 a 0 de 0 registros",
-            infoFiltered: "(filtrado de _MAX_ registros totales)",
-            search: "Buscar:",
-            paginate: {
-                first: "Primero", last: "Último",
-                next: "Siguiente", previous: "Anterior"
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
+    $(document).ready(function () {
+        // Tabla carpetas activas
+        let tablaActivas = $('#tableCarpetasActivas').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: {
+                url: "{{ route('carpetas.data') }}",
+                data: { activo: 'S' }  // Filtrar activas
             },
-            loadingRecords: "Cargando...",
-            processing: "Procesando...",
-            emptyTable: "No hay datos disponibles en la tabla"
-        };
-
-        const tablaActivos = $('#tablaActivos').DataTable({
-            language: idioma,
-            ajax: '{{ route("carpetas.data") }}?activo=S',
             columns: [
                 { data: 'idcarpeta' },
-                { data: 'nombre_solicitante' },
+                { data: 'solicitante' },
                 { data: 'materia' },
-                { data: 'tipo_juicio' },
-                { data: 'fecharegistro' },
+                { data: 'juicio' },
+                { data: 'sintesis' },
                 {
-                    data: 'idcarpeta',
-                    render: function (id) {
+                    data: 'idcarpeta', orderable: false, searchable: false,
+                    render: function(id) {
                         return `
-                            <button class="btn btn-warning btn-sm btn-editar" data-id="${id}"><i class="fa fa-edit"></i></button>
-                            <button class="btn btn-danger btn-sm btn-toggle" data-id="${id}"><i class="fa fa-times"></i></button>
-                        `;
+                        <button class="btn btn-warning btn-toggle" data-id="${id}" title="Desactivar">
+                            <i class="fas fa-times-circle"></i>
+                        </button>
+                        <button class="btn btn-primary btn-edit" data-id="${id}" title="Editar">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                      `;
                     }
-                }
-            ]
+                },
+            ],
+            language: {
+                url: '//cdn.datatables.net/plug-ins/1.11.3/i18n/es_es.json'
+            }
         });
 
-        const tablaInactivos = $('#tablaInactivos').DataTable({
-            language: idioma,
-            ajax: '{{ route("carpetas.data") }}?activo=N',
+        // Tabla carpetas inactivas
+        let tablaInactivas = $('#tableCarpetasInactivas').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: {
+                url: "{{ route('carpetas.data') }}",
+                data: { activo: 'N' }  // Filtrar inactivas
+            },
             columns: [
                 { data: 'idcarpeta' },
-                { data: 'nombre_solicitante' },
+                { data: 'solicitante' },
                 { data: 'materia' },
-                { data: 'tipo_juicio' },
-                { data: 'fecharegistro' },
+                { data: 'juicio' },
+                { data: 'sintesis' },
                 {
-                    data: 'idcarpeta',
-                    render: function (id) {
-                        return `<button class="btn btn-success btn-sm btn-toggle" data-id="${id}"><i class="fa fa-check"></i></button>`;
+                    data: 'idcarpeta', orderable: false, searchable: false,
+                    render: function(id) {
+                        return `
+                        <button class="btn btn-success btn-toggle" data-id="${id}" title="Activar">
+                            <i class="fas fa-check-circle"></i>
+                        </button>
+                        <button class="btn btn-danger btn-delete" data-id="${id}" title="Eliminar">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                      `;
                     }
-                }
-            ]
+                },
+            ],
+            language: {
+                url: '//cdn.datatables.net/plug-ins/1.11.3/i18n/es_es.json'
+            }
         });
 
-        $('#btnAgregar').click(() => {
+        // Nueva carpeta
+        $('#btnAdd').click(function () {
             $('#formCarpeta')[0].reset();
             $('#idcarpeta').val('');
-            $('#modalCarpeta').modal('show');
+            $('#carpetaModalLabel').text('Nueva Carpeta');
+            $('#carpetaModal').modal('show');
         });
 
+        // Guardar/Actualizar carpeta (igual que antes)
         $('#formCarpeta').submit(function (e) {
             e.preventDefault();
-            const id = $('#idcarpeta').val();
-            const isEdit = !!id;
-            const url = isEdit ? `/carpetas/update/${id}` : '{{ route("carpetas.store") }}';
+            $('#btnSave').prop('disabled', true);
 
-            const formData = $(this).serializeArray();
-            formData.push({ name: '_token', value: '{{ csrf_token() }}' });
-
-            $.post(url, formData, function (res) {
-                if (res.status === 'success') {
-                    $('#modalCarpeta').modal('hide');
-                    tablaActivos.ajax.reload();
-                    tablaInactivos.ajax.reload();
-                    Swal.fire('Listo', res.msg, 'success');
-                } else {
-                    Swal.fire('Error', res.msg, 'error');
-                }
-            });
-        });
-
-        $(document).on('click', '.btn-editar', function () {
-            const id = $(this).data('id');
-            $.get(`/carpetas/${id}/edit`, function (res) {
-                if (res.status === 'success') {
-                    const d = res.data;
-                    $('#idcarpeta').val(d.idcarpeta);
-                    $('#idsolicitante').val(d.idsolicitante);
-                    $('#idmateria').val(d.idmateria);
-                    $('#idjuicio').val(d.idjuicio);
-                    $('#sintesis').val(d.sintesis);
-                    $('#modalCarpeta').modal('show');
-                } else {
-                    Swal.fire('Error', res.msg, 'error');
-                }
-            });
-        });
-
-        $(document).on('click', '.btn-toggle', function () {
-            const $btn = $(this);
-            const id = $btn.data('id');
-
-            $btn.prop('disabled', true);
-
-            $.post(`/carpetas/toggle/${id}`, {
-                _token: '{{ csrf_token() }}'
-            })
-                .done(function (res) {
-                    if (res.status === 'success') {
-                        tablaActivos.ajax.reload();
-                        tablaInactivos.ajax.reload();
-                        Swal.fire('Listo', res.msg, 'success');
+            $.ajax({
+                url: "{{ route('carpetas.store') }}",
+                method: 'POST',
+                data: $(this).serialize(),
+                success: function (res) {
+                    $('#carpetaModal').modal('hide');
+                    $('#btnSave').prop('disabled', false);
+                    tablaActivas.ajax.reload(null, false);
+                    tablaInactivas.ajax.reload(null, false);
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Éxito',
+                        text: res.message,
+                    });
+                },
+                error: function (xhr) {
+                    $('#btnSave').prop('disabled', false);
+                    if (xhr.status === 422) {
+                        let errors = xhr.responseJSON.errors;
+                        let errorMsg = '';
+                        for (const key in errors) {
+                            errorMsg += errors[key][0] + '\n';
+                        }
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error de validación',
+                            text: errorMsg,
+                        });
                     } else {
-                        Swal.fire('Error', res.msg, 'error');
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error inesperado',
+                            text: xhr.status + ' - ' + (xhr.responseJSON?.message || xhr.statusText),
+                        });
                     }
-                })
-                .fail(function () {
-                    Swal.fire('Error', 'Ocurrió un error en el servidor.', 'error');
-                })
-                .always(function () {
-                    $btn.prop('disabled', false);
-                });
+                }
+            });
         });
 
+        // Editar carpeta (botón editar en tabla activa)
+        $('#tableCarpetasActivas').on('click', '.btn-edit', function () {
+            let id = $(this).data('id');
+            $.get("{{ url('carpetas/edit') }}/" + id, function (data) {
+                $('#idcarpeta').val(data.idcarpeta);
+                $('#idsolicitante').val(data.idsolicitante);
+                $('#idmateria').val(data.idmateria);
+                $('#idjuicio').val(data.idjuicio);
+                $('#sintesis').val(data.sintesis);
+                $('#carpetaModalLabel').text('Editar Carpeta');
+                $('#carpetaModal').modal('show');
+            });
+        });
+
+        // Toggle activar/desactivar en ambas tablas
+        $('body').on('click', '.btn-toggle', function () {
+            let id = $(this).data('id');
+            $.post("{{ url('carpetas/toggle') }}/" + id, function (res) {
+                tablaActivas.ajax.reload(null, false);
+                tablaInactivas.ajax.reload(null, false);
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Éxito',
+                    text: res.message,
+                });
+            }).fail(function(xhr) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error inesperado',
+                    text: xhr.status + ' - ' + (xhr.responseJSON?.message || xhr.statusText),
+                });
+            });
+        });
+
+        // Eliminar carpeta solo en tabla inactiva
+        $('#tableCarpetasInactivas').on('click', '.btn-delete', function () {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: "Esta acción no se puede deshacer.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    let id = $(this).data('id');
+                    $.ajax({
+                        url: "{{ url('carpetas/delete') }}/" + id,
+                        type: 'DELETE',
+                        success: function (res) {
+                            tablaInactivas.ajax.reload(null, false);
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Eliminado',
+                                text: res.message,
+                            });
+                        },
+                        error: function (xhr) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error inesperado',
+                                text: xhr.status + ' - ' + (xhr.responseJSON?.message || xhr.statusText),
+                            });
+                        }
+                    });
+                }
+            });
+        });
     });
 </script>

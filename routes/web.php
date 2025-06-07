@@ -198,13 +198,19 @@ Route::prefix('bitacora')->group(function () {
 
 //rutas para carpetas:
 
-    Route::get('carpetas/', [CarpetaController::class, 'index'])->name('carpetas.index');
-    Route::get('carpetas/data', [CarpetaController::class, 'data'])->name('carpetas.data');
-    Route::post('carpetas/store', [CarpetaController::class, 'store'])->name('carpetas.store');
-    Route::get('carpetas/{id}/edit', [CarpetaController::class, 'edit'])->name('carpetas.edit');
-    Route::post('carpetas/update/{id}', [CarpetaController::class, 'update'])->name('carpetas.update');
-    Route::post('carpetas/toggle/{id}', [CarpetaController::class, 'toggle'])->name('carpetas.toggle');
-    Route::delete('carpetas/delete/{id}', [CarpetaController::class, 'delete'])->name('carpetas.delete');
+
+
+
+Route::prefix('carpetas')->name('carpetas.')->group(function () {
+    Route::get('/', [CarpetaController::class, 'index'])->name('index');
+    Route::get('/data', [CarpetaController::class, 'data'])->name('data');
+    Route::post('/store', [CarpetaController::class, 'store'])->name('store');
+    Route::get('/edit/{idcarpeta}', [CarpetaController::class, 'edit'])->name('edit');
+    Route::post('/toggle/{idcarpeta}', [CarpetaController::class, 'toggle'])->name('toggle');
+    Route::delete('/delete/{idcarpeta}', [CarpetaController::class, 'destroy'])->name('delete');
+});
+
+
 
 
 //Permisos usuarios

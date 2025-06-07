@@ -13,25 +13,28 @@ class Carpeta extends Model
     protected $fillable = [
         'idsolicitante',
         'idmateria',
-        'idjuicio',      // nuevo
-        'sintesis',      // nuevo
+        'idjuicio',
+        'sintesis',
         'activo',
-        'fecharegistro'
+        'fecharegistro',
+        'fechaactualizacion',
     ];
 
     // Relaciones
     public function solicitante()
     {
-        return $this->belongsTo(Solicitante::class, 'idsolicitante', 'idsolicitante');
+        return $this->belongsTo(Solicitante::class, 'idsolicitante');
     }
 
     public function materia()
     {
-        return $this->belongsTo(Materia::class, 'idmateria', 'idmateria');
+        return $this->belongsTo(Materia::class, 'idmateria');
     }
-    public function tipoJuicio()
+
+    public function juicio()
     {
         return $this->belongsTo(TipoJuicio::class, 'idjuicio');
     }
-
 }
+
+
