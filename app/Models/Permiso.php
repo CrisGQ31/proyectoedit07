@@ -14,5 +14,11 @@ class Permiso extends Model
 
     protected $fillable = ['descripcion', 'activo', 'fecharegistro', 'fechaactualizacion']; // ← ¡Este es importante!
 
+
+    public function permisosUsuarios()
+    {
+        return $this->hasMany(PermisosUsuario::class, 'idpermiso');
+    }
+
 }
 

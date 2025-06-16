@@ -15,7 +15,7 @@ use App\Http\Controllers\TipoEstatusController;
 use App\Http\Controllers\MateriaController;
 use App\Http\Controllers\BitacoraController;
 use App\Http\Controllers\CarpetaController;
-use App\Http\Controllers\PermisosUsuarioController;
+use App\Http\Controllers\PermisosUsuariosController;
 
 // CREAR EL PRIMER USUARIO ADMINISTRADOR
 Route::get('/createUserAdmin', [UsersController::class, 'createUserAdmin']);
@@ -213,16 +213,24 @@ Route::prefix('carpetas')->name('carpetas.')->group(function () {
 
 
 
-//Permisos usuarios
-Route::prefix('permisosusuarios')->group(function () {
-    Route::get('/', [PermisosUsuarioController::class, 'index'])->name('permisosusuarios.index');
-    Route::get('/data', [PermisosUsuarioController::class, 'data'])->name('permisosusuarios.data');
-    Route::post('/store', [PermisosUsuarioController::class, 'store'])->name('permisosusuarios.store');
-    Route::get('/edit/{id}', [PermisosUsuarioController::class, 'edit'])->name('permisosusuarios.edit');
-    Route::put('/update/{id}', [PermisosUsuarioController::class, 'update'])->name('permisosusuarios.update');
-    Route::patch('/toggle/{id}', [PermisosUsuarioController::class, 'toggle'])->name('permisosusuarios.toggle');
-    Route::delete('/delete/{id}', [PermisosUsuarioController::class, 'destroy'])->name('permisosusuarios.destroy');
-});
+
+// Agrupadas para claridad (opcional)
+Route::get('permisosusuarios', [PermisosUsuariosController::class, 'index'])->name('permisosusuarios.index');
+Route::get('permisosusuarios/create', [PermisosUsuariosController::class, 'create'])->name('permisosusuarios.create');
+Route::post('permisosusuarios', [PermisosUsuariosController::class, 'store'])->name('permisosusuarios.store');
+Route::get('permisosusuarios/{id}', [PermisosUsuariosController::class, 'show'])->name('permisosusuarios.show');
+Route::get('permisosusuarios/{id}/edit', [PermisosUsuariosController::class, 'edit'])->name('permisosusuarios.edit');
+Route::put('permisosusuarios/{id}', [PermisosUsuariosController::class, 'update'])->name('permisosusuarios.update');
+Route::delete('permisosusuarios/{id}', [PermisosUsuariosController::class, 'destroy'])->name('permisosusuarios.destroy');
+
+
+use App\Http\Controllers\ExportarController;
+
+Route::post('/carpetas/reporte', [ExportarController::class, 'generarReporte'])->name('carpetas.reporte');
+Route::get('/carpetas/excel-alternativo', [ExportarController::class, 'exportarExcelAlternativo'])->name('carpetas.excel.alternativo');
+Route::get('/reporte-carpetas', [ExportarController::class, 'generarReporte'])->name('reporte.carpetas');
+
+
 
 
 

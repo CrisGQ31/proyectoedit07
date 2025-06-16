@@ -2,16 +2,16 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class PermisosUsuario extends Model
+class PermisoUsuario extends Model
 {
     use HasFactory;
 
     protected $table = 'tblpermisosusuarios';
     protected $primaryKey = 'idpermisosusuarios';
-    public $timestamps = false; // Porque usamos campos personalizados de fecha
+    public $timestamps = false;
 
     protected $fillable = [
         'idusuarios',
@@ -22,13 +22,11 @@ class PermisosUsuario extends Model
         'fechaactualizacion'
     ];
 
-    // Relación con usuario
     public function usuario()
     {
         return $this->belongsTo(User::class, 'idusuarios', 'idusuarios');
     }
 
-    // Relación con permiso
     public function permiso()
     {
         return $this->belongsTo(Permiso::class, 'idpermiso', 'idpermiso');

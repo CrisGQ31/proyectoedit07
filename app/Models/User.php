@@ -5,6 +5,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use App\Models\PermisosUsuarios;
+
 
 
 
@@ -28,4 +30,11 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
     ];
+
+    public function permisosUsuarios()
+    {
+        return $this->hasMany(PermisosUsuarios::class, 'idusuarios');
+    }
+
+
 }

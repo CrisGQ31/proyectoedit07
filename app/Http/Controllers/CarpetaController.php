@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Carpeta;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use PDF; // Si usas DomPDF para PDF
+use Maatwebsite\Excel\Facades\Excel; // Para Excel
+use App\Exports\CarpetasExport; // Exportador que debes crear
 
 class CarpetaController extends Controller
 {
@@ -115,3 +118,5 @@ class CarpetaController extends Controller
         return response()->json(['message' => 'Carpeta eliminada correctamente']);
     }
 }
+
+
